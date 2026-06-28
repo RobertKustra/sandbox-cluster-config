@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: sandbox-app
+  namespace: prod
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: sandbox-app
+      version: "0.1.0"
+      sourceRef:
+        kind: GitRepository
+        name: sandbox-helm-charts
+        namespace: flux-system
+  valuesFrom:
+    - kind: GitRepository
+      name: sandbox-env-values
+      namespace: flux-system
+      path: ./prod/sandbox-app.yaml
+# This HelmRelease is isolated to the prod environment.

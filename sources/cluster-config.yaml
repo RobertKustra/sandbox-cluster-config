@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: sandbox-cluster-config
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: ssh://git@github.com/RobertKustra/sandbox-cluster-config.git
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
