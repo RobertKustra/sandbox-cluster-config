@@ -7,7 +7,7 @@ spec:
   interval: 1m
   url: ssh://git@github.com/RobertKustra/sandbox-helm-charts.git
   ref:
-    branch: main
+    branch: development
   secretRef:
     name: flux-system
 ---
@@ -20,6 +20,6 @@ spec:
   interval: 1m
   url: ssh://git@github.com/RobertKustra/sandbox-env-values.git
   ref:
-    branch: main
+    branch: development
   secretRef:
     name: flux-system

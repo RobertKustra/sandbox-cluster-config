@@ -23,6 +23,8 @@ Flux GitOps configuration for the Sandbox cluster.
 
 ## GitHub + SSH access for Flux
 
+This setup uses GitHub SSH for the Flux GitRepository sources and the ongoing Git sync. The bootstrap command itself still needs a GitHub token (PAT) for the GitHub API when creating or configuring the repository, but the later Flux sync uses the SSH key stored in the flux-system secret.
+
 Run the helper script below to generate an SSH key, create the Kubernetes secret for Flux, and print the public key that must be added to GitHub.
 
 ```bash
@@ -49,12 +51,16 @@ flux --version
 ### 3. Bootstrap Flux in the cluster
 
 ```bash
+export GITHUB_TOKEN=<your-github-token>
+
 flux bootstrap github \
   --owner=RobertKustra \
   --repository=sandbox-cluster-config \
-  --branch=main \
+  --branch=development \
   --path=./clusters/minikube \
-  --personal
+  --personal \
+  --ssh-key-algorithm=rsa \
+  --ssh-hostname=github.com
 ```
 
 ### 4. Verify Flux components
@@ -71,4 +77,4 @@ kubectl get namespaces
 kubectl get helmreleases -A
 ```
 
-> If you use SSH instead of HTTPS for GitHub, make sure the required GitHub deploy key or SSH secret is available in the flux-system namespace.
+> If you use SSH instead of HTTPS for GitHub, make sure the SSH private key and GitHub known_hosts entry are present in the flux-system secret. The helper script above creates both automatically.

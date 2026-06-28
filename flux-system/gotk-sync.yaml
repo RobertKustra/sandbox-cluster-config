@@ -10,3 +10,16 @@ spec:
     branch: development
   secretRef:
     name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-cluster-config
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./clusters/minikube
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-cluster-config
