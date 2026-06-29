@@ -7,7 +7,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: sandbox-app
+      chart: charts/sandbox-app
       version: "0.1.0"
       sourceRef:
         kind: GitRepository
