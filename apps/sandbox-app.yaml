@@ -12,8 +12,8 @@ spec:
       sourceRef:
         kind: GitRepository
         name: sandbox-helm-charts
-        namespace: flux-system
   valuesFrom:
-    - kind: Secret
-      name: sandbox-app-values
-      valuesKey: values.yaml
+    - kind: GitRepository
+      name: sandbox-env-values
+      path: ./dev/sandbox-app.yaml
+# This HelmRelease is isolated to the dev environment.

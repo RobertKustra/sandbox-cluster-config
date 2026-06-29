@@ -16,6 +16,5 @@ spec:
   valuesFrom:
     - kind: GitRepository
       name: sandbox-env-values
-      namespace: flux-system
       path: ./prod/sandbox-app.yaml
 # This HelmRelease is isolated to the prod environment.
