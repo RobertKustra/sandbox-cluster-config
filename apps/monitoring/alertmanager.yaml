@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: alertmanager
+      version: "0.29.0"
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  values:
+    service:
+      type: ClusterIP
+      port: 9093
+    persistence:
+      enabled: true
+      size: 50Mi
+      storageClass: standard
+    config:
+      global:
+        resolve_timeout: 5m
+      route:
+        receiver: default-receiver
+      receivers:
+        - name: default-receiver

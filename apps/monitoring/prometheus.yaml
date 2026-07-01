@@ -16,6 +16,11 @@ spec:
     remediation:
       retries: 3
   values:
+    alertmanagers:
+      - namespace: monitoring
+        name: alertmanager
+        port: web
+        scheme: http
     server:
       service:
         type: ClusterIP
