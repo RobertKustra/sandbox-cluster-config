@@ -13,3 +13,6 @@ spec:
         kind: GitRepository
         name: sandbox-helm-charts
         namespace: flux-system
+  valuesFrom:
+    - kind: ConfigMap
+      name: sandbox-app-values

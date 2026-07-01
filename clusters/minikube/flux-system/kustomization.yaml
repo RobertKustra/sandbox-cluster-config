@@ -4,3 +4,4 @@ resources:
 - ./helm-repos.yaml
 - gotk-components.yaml
 - gotk-sync.yaml
+- ./env-values-kustomizations.yaml
