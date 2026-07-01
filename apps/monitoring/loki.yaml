@@ -5,8 +5,9 @@ metadata:
   namespace: monitoring
 spec:
   interval: 5m
-  chart:
-    spec:
+  suspend: true
+    loki:
+      structuredConfig:
       chart: loki
       sourceRef:
         kind: HelmRepository
@@ -15,10 +16,8 @@ spec:
   install:
     remediation:
       retries: 3
-  values:
-    deploymentMode: SingleBinary
     loki:
-      config:
+      config: |
         schema_config:
           configs:
             - from: 2020-10-15
@@ -32,6 +31,8 @@ spec:
           boltdb_shipper:
             active_index_directory: /data/loki/index
             shared_store: filesystem
+          filesystem:
+            directory: /data/loki/chunks
           filesystem:
             directory: /data/loki/chunks
     persistence:
