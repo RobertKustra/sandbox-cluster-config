@@ -3,6 +3,5 @@ kind: Kustomization
 resources:
   - ./prometheus.yaml
   - ./grafana.yaml
-  - ./loki.yaml
   - ./promtail.yaml
   - ./loki-stack.yaml
