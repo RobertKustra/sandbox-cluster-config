@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./clusters/minikube/dev
+  path: ./clusters/minikube/environments/dev
   prune: true
   wait: true
   timeout: 5m0s

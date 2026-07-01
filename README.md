@@ -5,9 +5,9 @@ Flux GitOps configuration for the Sandbox cluster.
 ## Structure
 
 - clusters/minikube/ - cluster-specific entrypoint for the Minikube cluster
-- clusters/minikube/dev/ - isolated configuration for the dev environment
-- clusters/minikube/test/ - isolated configuration for the test environment
-- clusters/minikube/prod/ - isolated configuration for the prod environment
+- clusters/minikube/environments/dev/ - isolated configuration for the dev environment
+- clusters/minikube/environments/test/ - isolated configuration for the test environment
+- clusters/minikube/environments/prod/ - isolated configuration for the prod environment
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
 - namespaces/dev/, namespaces/test/, namespaces/prod/ - namespace definitions per environment
 - apps/dev/, apps/test/, apps/prod/ - HelmRelease definitions per environment
