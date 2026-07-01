@@ -19,6 +19,10 @@ spec:
   values:
     adminUser: admin
     adminPassword: changeme
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
     service:
       type: NodePort
       nodePort: 30080

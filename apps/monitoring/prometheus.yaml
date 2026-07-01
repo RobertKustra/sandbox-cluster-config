@@ -20,3 +20,7 @@ spec:
     server:
       service:
         type: ClusterIP
+      persistentVolume:
+        enabled: true
+        size: 8Gi
+        storageClass: ""
