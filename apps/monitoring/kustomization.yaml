@@ -6,3 +6,4 @@ resources:
   - ./promtail.yaml
   - ./loki-stack.yaml
   - ./alertmanager.yaml
+  - ./monitoring-ingress.yaml
