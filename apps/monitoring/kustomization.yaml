@@ -5,3 +5,4 @@ resources:
   - ./grafana.yaml
   - ./loki.yaml
   - ./promtail.yaml
+  - ./loki-stack.yaml
