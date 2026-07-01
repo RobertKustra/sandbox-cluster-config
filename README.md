@@ -8,6 +8,7 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/dev/ - isolated configuration for the dev environment
 - clusters/minikube/environments/test/ - isolated configuration for the test environment
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
+- clusters/minikube/environments/monitoring/ - isolated configuration for the monitoring environment
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
 - namespaces/dev/, namespaces/test/, namespaces/prod/ - namespace definitions per environment
 - apps/dev/, apps/test/, apps/prod/ - HelmRelease definitions per environment
