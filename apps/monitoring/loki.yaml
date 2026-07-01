@@ -16,12 +16,7 @@ spec:
     remediation:
       retries: 3
   values:
-    persistence:
-      enabled: true
-      size: 10Gi
-      storageClass: "standard"
-    service:
-      type: ClusterIP
+    deploymentMode: SingleBinary
     loki:
       config:
         schema_config:
@@ -39,3 +34,9 @@ spec:
             shared_store: filesystem
           filesystem:
             directory: /data/loki/chunks
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: "standard"
+    service:
+      type: ClusterIP
