@@ -13,6 +13,7 @@ spec:
         kind: OCIRepository
         name: crunchydata-pgo
         namespace: flux-system
+  install:
     remediation:
       retries: 3
   upgrade:
