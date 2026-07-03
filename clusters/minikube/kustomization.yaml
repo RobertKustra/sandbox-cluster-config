@@ -7,3 +7,4 @@ resources:
   - ./environments/test
   - ./environments/prod
   - ./environments/monitoring
+  - ../../utils/operators/postgress/crunchy

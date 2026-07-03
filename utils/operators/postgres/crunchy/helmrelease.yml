@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: crunchy-postgres-operator
+  namespace: postgres-operator
+spec:
+  interval: 10m
+  targetNamespace: postgres-operator
+  chart:
+    spec:
+      chart: postgres-operator
+      sourceRef:
+        kind: HelmRepository
+        name: crunchydata
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
