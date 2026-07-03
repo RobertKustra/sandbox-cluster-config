@@ -4,6 +4,4 @@ resources:
   - ./flux-system
   - ../../sources
   - ./environments/dev
-  - ./environments/test
-  - ./environments/prod
   - ./environments/monitoring
