@@ -5,4 +5,4 @@ resources:
   - ../../sources
   - ./environments/dev
   - ./environments/monitoring
-  - ../../utils/operators/postgress/crunchy
+  - ../../utils/operators/postgres/crunchy
