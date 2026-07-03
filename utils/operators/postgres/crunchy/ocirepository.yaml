@@ -1,10 +1,9 @@
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
+kind: HelmRepository
 metadata:
   name: crunchydata-pgo
   namespace: flux-system
 spec:
   interval: 10m
-  url: oci://registry.developers.crunchydata.com/crunchydata/pgo
-  ref:
-    semver: ">=6.0.0"
+  type: oci
+  url: oci://registry.developers.crunchydata.com/crunchydata

@@ -8,9 +8,9 @@ spec:
   targetNamespace: postgres-operator
   chart:
     spec:
-      chart: "."
+      chart: pgo
       sourceRef:
-        kind: OCIRepository
+        kind: HelmRepository
         name: crunchydata-pgo
         namespace: flux-system
   install:
