@@ -19,6 +19,9 @@ spec:
   values:
     adminUser: admin
     adminPassword: changeme
+    podSecurityContext:
+      fsGroup: 472
+      fsGroupChangePolicy: "OnRootMismatch"
     persistence:
       enabled: true
       size: 5Gi
