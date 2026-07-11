@@ -20,13 +20,15 @@ spec:
     adminUser: admin
     adminPassword: changeme
 
-    podSecurityContext:
+    # Pod-level
+    securityContext:
       runAsUser: 472
       runAsGroup: 472
       fsGroup: 472
       fsGroupChangePolicy: "OnRootMismatch"
 
-    securityContext:
+    # Container-level
+    containerSecurityContext:
       runAsNonRoot: true
       runAsUser: 472
       runAsGroup: 472
