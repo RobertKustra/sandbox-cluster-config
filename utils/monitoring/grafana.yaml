@@ -16,16 +16,30 @@ spec:
   install:
     remediation:
       retries: 3
-  values:
-    adminUser: admin
-    adminPassword: changeme
-    podSecurityContext:
-      fsGroup: 472
-      fsGroupChangePolicy: "OnRootMismatch"
-    persistence:
-      enabled: true
-      size: 5Gi
-      storageClass: "standard"
-    service:
-      type: NodePort
-      nodePort: 30080
+values:
+  adminUser: admin
+  adminPassword: changeme
+
+  podSecurityContext:
+    runAsUser: 472
+    runAsGroup: 472
+    fsGroup: 472
+    fsGroupChangePolicy: "OnRootMismatch"
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 472
+    runAsGroup: 472
+    allowPrivilegeEscalation: false
+
+  initChownData:
+    enabled: false
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: "standard"
+
+  service:
+    type: NodePort
+    nodePort: 30080
