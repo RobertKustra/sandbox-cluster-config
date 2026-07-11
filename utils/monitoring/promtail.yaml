@@ -16,7 +16,6 @@ spec:
     remediation:
       retries: 3
   values:
-  values:
     config:
       clients:
         # The URL of the Loki instance to which Promtail will send logs. This should match the service name and port of the Loki deployment in your cluster.
