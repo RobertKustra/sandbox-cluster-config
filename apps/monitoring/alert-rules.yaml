@@ -1,19 +1,21 @@
-groups:
-  - name: monitoring-alerts
-    rules:
-      - alert: InstanceDown
-        expr: up == 0
-        for: 5m
-        labels:
-          severity: page
-        annotations:
-          summary: 'Instance {{ $labels.instance }} is down'
-          description: 'Instance {{ $labels.instance }} has been down for more than 5 minutes.'
-      - alert: HighCpuUsage
-        expr: rate(process_cpu_seconds_total[5m]) > 0.9
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: 'High CPU usage on {{ $labels.job }}'
-          description: 'CPU usage is above 90% for more than 5 minutes.'
+serverFiles:
+  alerting_rules.yml:
+    groups:
+      - name: monitoring-alerts
+        rules:
+          - alert: InstanceDown
+            expr: up == 0
+            for: 5m
+            labels:
+              severity: page
+            annotations:
+              summary: 'Instance {{ $labels.instance }} is down'
+              description: 'Instance {{ $labels.instance }} has been down for more than 5 minutes.'
+          - alert: HighCpuUsage
+            expr: rate(process_cpu_seconds_total[5m]) > 0.9
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: 'High CPU usage on {{ $labels.job }}'
+              description: 'CPU usage is above 90% for more than 5 minutes.'
