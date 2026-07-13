@@ -1,0 +1,19 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: redis
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: redis
+      version: "20.x"
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+  valuesFrom:
+    - kind: ConfigMap
+      name: redis-values-base
+    - kind: ConfigMap
+      name: redis-values-env
