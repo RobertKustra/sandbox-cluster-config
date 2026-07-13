@@ -11,7 +11,8 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/monitoring/ - isolated configuration for the monitoring environment
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
 - namespaces/dev/, namespaces/test/, namespaces/prod/ - namespace definitions per environment
-- apps/dev/, apps/test/, apps/prod/ - HelmRelease definitions per environment
+- apps/base/ - shared application manifests reused across environments
+- apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays for application manifests
 
 ## Flow
 
