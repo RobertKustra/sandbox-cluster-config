@@ -14,3 +14,7 @@ patches:
         path: /metadata/labels
         value:
           environment: dev
+      - op: replace
+        path: /metadata/annotations
+        value:
+          my-annotation: "true"
