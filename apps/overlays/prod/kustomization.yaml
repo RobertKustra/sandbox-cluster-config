@@ -3,6 +3,12 @@ kind: Kustomization
 namespace: prod
 resources:
   - ../../base
+secretGenerator:
+  - name: redis-auth
+    literals:
+      - redis-password=prod-change-me
+generatorOptions:
+  disableNameSuffixHash: true
 patches:
   - target:
       kind: Ingress

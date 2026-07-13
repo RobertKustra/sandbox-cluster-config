@@ -12,6 +12,11 @@ spec:
         kind: HelmRepository
         name: bitnami
         namespace: flux-system
+  values:
+    auth:
+      enabled: true
+      existingSecret: redis-auth
+      existingSecretPasswordKey: redis-password
   valuesFrom:
     - kind: ConfigMap
       name: redis-values-base

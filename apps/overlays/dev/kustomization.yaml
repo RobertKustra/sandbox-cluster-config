@@ -3,6 +3,12 @@ kind: Kustomization
 namespace: dev
 resources:
   - ../../base
+secretGenerator:
+  - name: redis-auth
+    literals:
+      - redis-password=dev-change-me
+generatorOptions:
+  disableNameSuffixHash: true
 patches:
   - target:
       kind: Ingress
