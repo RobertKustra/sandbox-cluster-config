@@ -15,4 +15,6 @@ spec:
         namespace: flux-system
   valuesFrom:
     - kind: ConfigMap
-      name: sandbox-app-values
+      name: sandbox-app-values-base
+    - kind: ConfigMap
+      name: sandbox-app-values-env
