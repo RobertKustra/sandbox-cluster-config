@@ -4,10 +4,14 @@ metadata:
   name: redis
 spec:
   interval: 5m
-  chartRef:
-    kind: OCIRepository
-    name: redis-chart
-    namespace: flux-system
+  chart:
+    spec:
+      chart: charts/redis
+      version: "0.1.0"
+      sourceRef:
+        kind: GitRepository
+        name: sandbox-helm-charts
+        namespace: flux-system
   values:
     auth:
       enabled: true
