@@ -5,7 +5,7 @@ resources:
 patches:
   - target:
       kind: Namespace
-      name: sandbox
+      name: placeholder-namespace
     patch: |-
       - op: replace
         path: /metadata/name
