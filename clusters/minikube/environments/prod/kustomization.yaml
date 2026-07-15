@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../../../../namespaces/overlays/prod
   - ../../../../apps/overlays/prod
+  - ../../../../postgres/overlays/prod

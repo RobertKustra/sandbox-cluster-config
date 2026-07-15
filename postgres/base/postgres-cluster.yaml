@@ -1,0 +1,19 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: sandbox-postgres
+spec:
+  postgresVersion: 16
+  users:
+    - name: sandbox-app
+      databases:
+        - sandbox_app
+  instances:
+    - name: instance1
+      replicas: 1
+      dataVolumeClaimSpec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

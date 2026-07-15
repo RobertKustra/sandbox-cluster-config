@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../../../../namespaces/overlays/test
   - ../../../../apps/overlays/test
+  - ../../../../postgres/overlays/test
