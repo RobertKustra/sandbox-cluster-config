@@ -16,6 +16,8 @@ Flux GitOps configuration for the Sandbox cluster.
 - apps/base/ - shared application manifests reused across environments
 - apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays for application manifests
 - apps/monitoring/ - monitoring stack package for the whole cluster
+- postgres/base/ - shared Crunchy PGO PostgresCluster manifest
+- postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
 
 ## Flow
 
@@ -80,6 +82,49 @@ kubectl get kustomizations -A
 ```bash
 kubectl get namespaces
 kubectl get helmreleases -A
+```
+
+## PostgreSQL on Minikube
+
+The Minikube cluster already includes the Crunchy Postgres Operator from `utils/operators/postgres/crunchy`. The PostgreSQL instances for `dev`, `test`, and `prod` are defined as `PostgresCluster` resources under the `postgres/overlays/<env>` paths.
+
+### Validate manifests locally
+
+```bash
+kustomize build clusters/minikube/environments/dev
+kustomize build clusters/minikube/environments/test
+kustomize build clusters/minikube/environments/prod
+kustomize build clusters/minikube
+```
+
+### Reconcile changes with Flux
+
+```bash
+flux reconcile source git flux-system -n flux-system
+flux reconcile kustomization dev -n flux-system --with-source
+flux reconcile kustomization test -n flux-system --with-source
+flux reconcile kustomization prod -n flux-system --with-source
+```
+
+### Verify operator and database pods
+
+```bash
+kubectl get pods -n postgres-operator
+kubectl get postgresclusters.postgres-operator.crunchydata.com -A
+kubectl get pods -n dev
+kubectl get pods -n test
+kubectl get pods -n prod
+```
+
+### Inspect PostgreSQL details
+
+```bash
+kubectl describe postgrescluster sandbox-postgres -n dev
+kubectl describe postgrescluster sandbox-postgres -n test
+kubectl describe postgrescluster sandbox-postgres -n prod
+kubectl get secrets -n dev | grep sandbox-postgres
+kubectl get secrets -n test | grep sandbox-postgres
+kubectl get secrets -n prod | grep sandbox-postgres
 ```
 
 > If you use SSH instead of HTTPS for GitHub, make sure the SSH private key and GitHub known_hosts entry are present in the flux-system secret. The helper script above creates both automatically.
