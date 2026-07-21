@@ -31,6 +31,9 @@ spec:
       containers:
         - name: vllm
           image: vllm/vllm-openai:latest
+          env:
+            - name: VLLM_USE_V2_MODEL_RUNNER
+              value: "0"
           args:
             - Qwen/Qwen2.5-1.5B-Instruct
             - --host
