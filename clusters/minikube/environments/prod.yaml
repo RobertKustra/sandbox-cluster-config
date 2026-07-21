@@ -5,6 +5,9 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
+  dependsOn:
+    - name: minikube-postgres-operator
+    - name: sandbox-env-values-prod
   path: ./clusters/minikube/environments/prod
   prune: true
   wait: true
