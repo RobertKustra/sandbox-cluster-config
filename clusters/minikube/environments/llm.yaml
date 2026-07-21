@@ -1,0 +1,18 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-llm
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./clusters/minikube/environments/llm
+  prune: true
+  wait: true
+  timeout: 5m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substitute:
+      cluster: minikube
+      environment: llm
