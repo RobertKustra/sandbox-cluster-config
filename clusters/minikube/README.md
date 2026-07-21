@@ -4,10 +4,13 @@ This folder contains the isolated Flux entrypoints for the Minikube cluster.
 
 ## Structure
 
-- dev/ - configuration for the dev environment
-- test/ - configuration for the test environment
-- prod/ - configuration for the prod environment
 - environments/ - Flux Kustomization manifests per environment
+- environments/dev.yaml - Flux Kustomization for the dev environment
+- environments/test.yaml - Flux Kustomization for the test environment
+- environments/prod.yaml - Flux Kustomization for the prod environment
+- environments/monitoring.yaml - Flux Kustomization for the monitoring environment
+- environments/llm.yaml - Flux Kustomization for the llm environment
+- environments/operators-postgres.yaml - Flux Kustomization for PostgreSQL operator resources
 
 Each environment is isolated so changes in one environment do not affect the others directly.
 

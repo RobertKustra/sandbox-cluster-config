@@ -9,12 +9,14 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/test/ - isolated configuration for the test environment
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
 - clusters/minikube/environments/monitoring/ - isolated configuration for the monitoring environment
+- clusters/minikube/environments/llm/ - isolated configuration for the llm environment
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
 - namespaces/base/ - shared namespace manifest
 - namespaces/overlays/dev/, namespaces/overlays/test/, namespaces/overlays/prod/ - namespace overlays per environment
 - namespaces/monitoring/ - monitoring namespace package
 - apps/base/ - shared application manifests reused across environments
 - apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays for application manifests
+- apps/llm/ - sandbox-vllm application package (HelmRelease + ingress)
 - apps/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
@@ -23,8 +25,16 @@ Flux GitOps configuration for the Sandbox cluster.
 
 1. Flux reads the GitRepository sources from this repository.
 2. Each environment is isolated in its own subdirectory under the Minikube cluster folder.
-3. The cluster entrypoint references dev, test, and prod independently.
+3. The cluster entrypoint references dev, test, prod, monitoring, and llm independently.
 4. Each HelmRelease pulls values from the matching path in the sandbox-env-values repository.
+
+## LLM deployment
+
+The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
+
+- HelmRelease: `apps/llm/sandbox-vllm.yaml`
+- Ingress host: `sandbox-vllm.llm.local`
+- Smoke test: Helm hook Job executed after install and upgrade
 
 ## Bootstrap commands for Minikube + Flux
 
@@ -94,6 +104,8 @@ The Minikube cluster already includes the Crunchy Postgres Operator from `utils/
 kustomize build clusters/minikube/environments/dev
 kustomize build clusters/minikube/environments/test
 kustomize build clusters/minikube/environments/prod
+kustomize build clusters/minikube/environments/monitoring
+kustomize build clusters/minikube/environments/llm
 kustomize build clusters/minikube
 ```
 
