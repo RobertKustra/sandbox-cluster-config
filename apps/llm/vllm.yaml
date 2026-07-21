@@ -27,6 +27,7 @@ spec:
       labels:
         app.kubernetes.io/name: vllm
     spec:
+      enableServiceLinks: false
       containers:
         - name: vllm
           image: vllm/vllm-openai:latest
