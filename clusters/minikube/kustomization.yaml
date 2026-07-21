@@ -8,4 +8,5 @@ resources:
   - ./environments/test.yaml
   - ./environments/prod.yaml
   - ./environments/monitoring.yaml
+  - ./environments/llm-smoke.yaml
   - ./environments/llm.yaml
