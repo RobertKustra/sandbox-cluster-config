@@ -12,8 +12,8 @@ generatorOptions:
 patches:
   - target:
       kind: Ingress
-      name: sandbox-app-ingress
+      name: sandbox-nginx-ingress
     patch: |-
       - op: replace
         path: /spec/rules/0/host
-        value: sandbox-app.dev.local
+        value: sandbox-nginx.dev.local

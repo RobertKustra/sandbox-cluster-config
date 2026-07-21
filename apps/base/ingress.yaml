@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: sandbox-app-ingress
+  name: sandbox-nginx-ingress
   annotations:
     kubernetes.io/ingress.class: traefik
 spec:
   ingressClassName: traefik
   rules:
-    - host: sandbox-app.local
+    - host: sandbox-nginx.local
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: sandbox-app
+                name: sandbox-nginx
                 port:
                   number: 80
