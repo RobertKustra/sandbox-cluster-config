@@ -1,114 +1,94 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: vllm-model-cache
-  labels:
-    app.kubernetes.io/name: vllm
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 30Gi
----
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
 metadata:
   name: vllm
-  labels:
-    app.kubernetes.io/name: vllm
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: vllm
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: vllm
+  interval: 5m
+  chart:
     spec:
-      enableServiceLinks: false
-      containers:
-        - name: vllm
-          image: vllm/vllm-openai:latest
-          env:
-            - name: VLLM_USE_V2_MODEL_RUNNER
-              value: "0"
-            - name: PYTORCH_CUDA_ALLOC_CONF
-              value: "expandable_segments:True"
-          args:
-            - Qwen/Qwen2.5-1.5B-Instruct
-            - --host
-            - 0.0.0.0
-            - --port
-            - "8000"
-            - --dtype
-            - half
-            - --max-model-len
-            - "4096"
-            - --max-num-seqs
-            - "4"
-            - --gpu-memory-utilization
-            - "0.65"
-          ports:
-            - containerPort: 8000
-              name: http
-          startupProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 15
-            failureThreshold: 120
-            timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            failureThreshold: 6
-            timeoutSeconds: 3
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 15
-            periodSeconds: 20
-            failureThreshold: 3
-            timeoutSeconds: 3
-          resources:
-            requests:
-              cpu: "2"
-              memory: 4Gi
-            limits:
-              cpu: "4"
-              memory: 8Gi
-              nvidia.com/gpu: 1
-          volumeMounts:
-            - name: model-cache
-              mountPath: /root/.cache/huggingface
-            - name: dshm
-              mountPath: /dev/shm
-      volumes:
-        - name: model-cache
-          persistentVolumeClaim:
-            claimName: vllm-model-cache
-        - name: dshm
-          emptyDir:
-            medium: Memory
-            sizeLimit: 2Gi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: vllm
-  labels:
-    app.kubernetes.io/name: vllm
-spec:
-  selector:
-    app.kubernetes.io/name: vllm
-  ports:
-    - name: http
+      chart: charts/vllm
+      version: "0.1.0"
+      sourceRef:
+        kind: GitRepository
+        name: sandbox-helm-charts
+        namespace: flux-system
+  values:
+    replicaCount: 1
+    image:
+      repository: vllm/vllm-openai
+      tag: latest
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
       port: 8000
-      targetPort: http
+
+    model:
+      args:
+        - Qwen/Qwen2.5-1.5B-Instruct
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8000"
+        - --dtype
+        - half
+        - --max-model-len
+        - "4096"
+        - --max-num-seqs
+        - "4"
+        - --gpu-memory-utilization
+        - "0.65"
+
+    env:
+      - name: VLLM_USE_V2_MODEL_RUNNER
+        value: "0"
+      - name: PYTORCH_CUDA_ALLOC_CONF
+        value: "expandable_segments:True"
+
+    probes:
+      startup:
+        initialDelaySeconds: 30
+        periodSeconds: 15
+        failureThreshold: 120
+        timeoutSeconds: 5
+      readiness:
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 6
+        timeoutSeconds: 3
+      liveness:
+        initialDelaySeconds: 15
+        periodSeconds: 20
+        failureThreshold: 3
+        timeoutSeconds: 3
+
+    resources:
+      requests:
+        cpu: "2"
+        memory: 4Gi
+      limits:
+        cpu: "4"
+        memory: 8Gi
+        nvidia.com/gpu: 1
+
+    persistence:
+      enabled: true
+      claimName: vllm-model-cache
+      size: 30Gi
+      accessModes:
+        - ReadWriteOnce
+      mountPath: /root/.cache/huggingface
+
+    shm:
+      enabled: true
+      mountPath: /dev/shm
+      sizeLimit: 2Gi
+
+    smokeTest:
+      enabled: true
+      image:
+        repository: curlimages/curl
+        tag: "8.9.1"
+        pullPolicy: IfNotPresent
+      retries: 30
+      sleepSeconds: 5
