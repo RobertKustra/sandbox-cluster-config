@@ -31,8 +31,6 @@ spec:
         - name: vllm
           image: vllm/vllm-openai:latest
           args:
-            - serve
-            - --model
             - Qwen/Qwen2.5-1.5B-Instruct
             - --host
             - 0.0.0.0
