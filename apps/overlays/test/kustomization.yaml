@@ -4,9 +4,9 @@ namespace: test
 resources:
   - ../../base
 secretGenerator:
-  - name: redis-auth
+  - name: sandbox-redis-auth
     literals:
-      - redis-password=test-change-me
+      - sandbox-redis-password=test-change-me
 generatorOptions:
   disableNameSuffixHash: true
 patches:

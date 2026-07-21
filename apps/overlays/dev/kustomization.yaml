@@ -4,9 +4,9 @@ namespace: dev
 resources:
   - ../../base
 secretGenerator:
-  - name: redis-auth
+  - name: sandbox-redis-auth
     literals:
-      - redis-password=dev-change-me
+      - sandbox-redis-password=dev-change-me
 generatorOptions:
   disableNameSuffixHash: true
 patches:

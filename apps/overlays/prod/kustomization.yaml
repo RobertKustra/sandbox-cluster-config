@@ -4,9 +4,9 @@ namespace: prod
 resources:
   - ../../base
 secretGenerator:
-  - name: redis-auth
+  - name: sandbox-redis-auth
     literals:
-      - redis-password=prod-change-me
+      - sandbox-redis-password=prod-change-me
 generatorOptions:
   disableNameSuffixHash: true
 patches:

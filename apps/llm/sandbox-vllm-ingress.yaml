@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: vllm-ingress
+  name: sandbox-vllm-ingress
   annotations:
     kubernetes.io/ingress.class: traefik
 spec:
   ingressClassName: traefik
   rules:
-    - host: vllm.llm.local
+    - host: sandbox-vllm.llm.local
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: vllm
+                name: sandbox-vllm
                 port:
                   number: 8000
