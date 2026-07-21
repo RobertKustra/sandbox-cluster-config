@@ -25,7 +25,7 @@ spec:
 
     model:
       args:
-        - Qwen/Qwen2.5-1.5B-Instruct
+        - Qwen/Qwen2.5-Coder-3B-Instruct
         - --host
         - 0.0.0.0
         - --port
@@ -33,11 +33,11 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "4096"
+        - "6144"
         - --max-num-seqs
         - "4"
         - --gpu-memory-utilization
-        - "0.65"
+        - "0.8"
 
     env:
       - name: VLLM_USE_V2_MODEL_RUNNER
