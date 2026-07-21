@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: llm
 resources:
   - ./vllm.yaml
+  - ./ingress.yaml
