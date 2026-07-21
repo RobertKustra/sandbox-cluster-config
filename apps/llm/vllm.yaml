@@ -56,8 +56,12 @@ spec:
               path: /health
               port: http
             periodSeconds: 10
+            - --max-model-len
+            - "4096"
+            - --max-num-seqs
+            - "4"
             failureThreshold: 90
-            timeoutSeconds: 3
+            - "0.65"
           readinessProbe:
             httpGet:
               path: /health
