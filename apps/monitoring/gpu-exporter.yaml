@@ -18,6 +18,8 @@ spec:
     remediation:
       retries: 3
   values:
+    serviceMonitor:
+      enabled: false
     service:
       annotations:
         prometheus.io/scrape: "true"
