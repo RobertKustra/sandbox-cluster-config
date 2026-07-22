@@ -112,10 +112,15 @@ kustomize build clusters/minikube
 ### Reconcile changes with Flux
 
 ```bash
-flux reconcile source git flux-system -n flux-system
-flux reconcile kustomization dev -n flux-system --with-source
-flux reconcile kustomization test -n flux-system --with-source
-flux reconcile kustomization prod -n flux-system --with-source
+flux reconcile source git sandbox-cluster-config -n flux-system
+flux reconcile source git sandbox-helm-charts -n flux-system
+flux reconcile source git sandbox-env-values -n flux-system
+flux reconcile kustomization sandbox-cluster-config -n flux-system --with-source
+
+# Optional per-environment values overlays
+flux reconcile kustomization sandbox-env-values-dev -n flux-system --with-source
+flux reconcile kustomization sandbox-env-values-test -n flux-system --with-source
+flux reconcile kustomization sandbox-env-values-prod -n flux-system --with-source
 ```
 
 ### Verify operator and database pods
