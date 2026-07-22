@@ -33,17 +33,17 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "6144"
+        - "2048"
         - --max-num-seqs
-        - "4"
+        - "1"
         - --gpu-memory-utilization
-        - "0.8"
+        - "0.55"
 
     env:
       - name: VLLM_USE_V2_MODEL_RUNNER
         value: "0"
       - name: PYTORCH_CUDA_ALLOC_CONF
-        value: "expandable_segments:True"
+        value: "expandable_segments:True,max_split_size_mb:64"
 
     probes:
       startup:
