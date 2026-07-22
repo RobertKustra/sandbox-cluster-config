@@ -7,9 +7,6 @@ secretGenerator:
   - name: sandbox-redis-auth
     literals:
       - sandbox-redis-password=test-change-me
-  - name: sandbox-ai-consumer-env
-    literals:
-      - VLLM_PROMPT=Test environment prompt for sandbox-ai-consumer
 generatorOptions:
   disableNameSuffixHash: true
 patches:
