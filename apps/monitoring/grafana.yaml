@@ -24,6 +24,13 @@ spec:
       datasources.yaml:
         apiVersion: 1
         datasources:
+          - name: Prometheus
+            uid: prometheus
+            type: prometheus
+            access: proxy
+            url: http://prometheus-server
+            isDefault: true
+            editable: true
           - name: Loki
             uid: loki
             type: loki
@@ -31,6 +38,359 @@ spec:
             url: http://loki-stack:3100
             isDefault: false
             editable: true
+
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: default
+            orgId: 1
+            folder: Sandbox
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+
+    dashboards:
+      default:
+        vllm-token-usage:
+          json: |
+            {
+              "annotations": {"list": []},
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "graphTooltip": 0,
+              "panels": [
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ops",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+                  "id": 1,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum(rate(vllm:prompt_tokens_total[5m])) or sum(rate(vllm:prompt_tokens[5m]))",
+                      "legendFormat": "prompt",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Prompt Tokens / s",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ops",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+                  "id": 2,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum(rate(vllm:generation_tokens_total[5m])) or sum(rate(vllm:generation_tokens[5m]))",
+                      "legendFormat": "generation",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Generation Tokens / s",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ops",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+                  "id": 3,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "(sum(rate(vllm:prompt_tokens_total[5m])) or sum(rate(vllm:prompt_tokens[5m]))) + (sum(rate(vllm:generation_tokens_total[5m])) or sum(rate(vllm:generation_tokens[5m])))",
+                      "legendFormat": "total",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Total Tokens / s",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ops",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 10, "w": 24, "x": 0, "y": 8},
+                  "id": 4,
+                  "options": {
+                    "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true},
+                    "tooltip": {"mode": "single", "sort": "none"}
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum by (model_name) (rate(vllm:prompt_tokens_total[5m])) or sum by (model_name) (rate(vllm:prompt_tokens[5m]))",
+                      "legendFormat": "{{model_name}} prompt",
+                      "refId": "A"
+                    },
+                    {
+                      "expr": "sum by (model_name) (rate(vllm:generation_tokens_total[5m])) or sum by (model_name) (rate(vllm:generation_tokens[5m]))",
+                      "legendFormat": "{{model_name}} generation",
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "Token Throughput by Model",
+                  "type": "timeseries"
+                }
+              ],
+              "schemaVersion": 39,
+              "style": "dark",
+              "tags": ["vllm", "tokens"],
+              "templating": {"list": []},
+              "time": {"from": "now-1h", "to": "now"},
+              "timepicker": {},
+              "timezone": "",
+              "title": "vLLM Token Usage",
+              "uid": "vllm-token-usage",
+              "version": 1,
+              "weekStart": ""
+            }
+        vllm-performance:
+          json: |
+            {
+              "annotations": {"list": []},
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "graphTooltip": 0,
+              "panels": [
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "reqps",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+                  "id": 11,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum(rate(vllm:request_success_total[5m])) or sum(rate(vllm:request_total[5m]))",
+                      "legendFormat": "RPS",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Request Rate",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "short",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+                  "id": 12,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum(vllm:num_requests_running) or sum(vllm:running_requests)",
+                      "legendFormat": "running",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Running Requests",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "short",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+                  "id": 13,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum(vllm:num_requests_waiting) or sum(vllm:waiting_requests)",
+                      "legendFormat": "waiting",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "Queued Requests",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "percentunit",
+                      "min": 0,
+                      "max": 1,
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+                  "id": 14,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "avg(vllm:kv_cache_usage_perc)",
+                      "legendFormat": "kv cache",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "KV Cache Usage",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "s",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 10, "w": 12, "x": 0, "y": 8},
+                  "id": 15,
+                  "options": {
+                    "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true},
+                    "tooltip": {"mode": "single", "sort": "none"}
+                  },
+                  "targets": [
+                    {
+                      "expr": "histogram_quantile(0.5, sum(rate(vllm:time_to_first_token_seconds_bucket[5m])) by (le))",
+                      "legendFormat": "TTFT p50",
+                      "refId": "A"
+                    },
+                    {
+                      "expr": "histogram_quantile(0.95, sum(rate(vllm:time_to_first_token_seconds_bucket[5m])) by (le))",
+                      "legendFormat": "TTFT p95",
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "Time To First Token",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "s",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 10, "w": 12, "x": 12, "y": 8},
+                  "id": 16,
+                  "options": {
+                    "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true},
+                    "tooltip": {"mode": "single", "sort": "none"}
+                  },
+                  "targets": [
+                    {
+                      "expr": "histogram_quantile(0.5, sum(rate(vllm:e2e_request_latency_seconds_bucket[5m])) by (le))",
+                      "legendFormat": "E2E p50",
+                      "refId": "A"
+                    },
+                    {
+                      "expr": "histogram_quantile(0.95, sum(rate(vllm:e2e_request_latency_seconds_bucket[5m])) by (le))",
+                      "legendFormat": "E2E p95",
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "End-to-End Latency",
+                  "type": "timeseries"
+                }
+              ],
+              "schemaVersion": 39,
+              "style": "dark",
+              "tags": ["vllm", "latency", "performance"],
+              "templating": {"list": []},
+              "time": {"from": "now-1h", "to": "now"},
+              "timepicker": {},
+              "timezone": "",
+              "title": "vLLM Performance",
+              "uid": "vllm-performance",
+              "version": 1,
+              "weekStart": ""
+            }
 
     # Pod-level
     securityContext:
