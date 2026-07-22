@@ -123,6 +123,37 @@ flux reconcile kustomization sandbox-env-values-test -n flux-system --with-sourc
 flux reconcile kustomization sandbox-env-values-prod -n flux-system --with-source
 ```
 
+### Troubleshooting when changes are not applied
+
+Use this checklist when reconcile succeeds but workloads still use old manifests.
+
+```bash
+# 1) Verify source revisions fetched by Flux
+flux get sources git -n flux-system
+
+# 2) Verify Kustomization readiness and last applied revision
+flux get kustomizations -n flux-system
+flux describe kustomization sandbox-cluster-config -n flux-system
+
+# 3) Verify HelmRelease state and chart version in use
+flux get helmreleases -A
+flux describe helmrelease sandbox-ai-consumer -n default
+
+# 4) Force re-fetch and reconcile if needed
+flux reconcile source git sandbox-helm-charts -n flux-system
+flux reconcile source git sandbox-cluster-config -n flux-system
+flux reconcile kustomization sandbox-cluster-config -n flux-system --with-source
+
+# 5) Inspect recent controller events/logs
+kubectl get events -n flux-system --sort-by=.lastTimestamp | tail -n 40
+flux logs -n flux-system --since=30m
+```
+
+If a chart template changed, ensure both are updated:
+
+- chart version in `Chart.yaml` in the chart repository
+- HelmRelease `spec.chart.spec.version` in the cluster configuration repository
+
 ### Verify operator and database pods
 
 ```bash
