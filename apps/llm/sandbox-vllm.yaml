@@ -29,7 +29,7 @@ spec:
 
     model:
       args:
-        - Qwen/Qwen2.5-Coder-1.5B-Instruct
+        - Qwen/Qwen2.5-Coder-3B-Instruct
         - --host
         - 0.0.0.0
         - --port
