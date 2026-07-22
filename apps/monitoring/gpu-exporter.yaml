@@ -7,11 +7,13 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: prometheus-dcgm-exporter
+      chart: dcgm-exporter
+      version: "4.8.3"
       sourceRef:
         kind: HelmRepository
-        name: prometheus-community
+        name: dcgm-exporter
         namespace: flux-system
+        
   install:
     remediation:
       retries: 3
