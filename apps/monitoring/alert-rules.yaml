@@ -19,3 +19,49 @@ serverFiles:
             annotations:
               summary: 'High CPU usage on {{ $labels.job }}'
               description: 'CPU usage is above 90% for more than 5 minutes.'
+      - name: vllm-alerts
+        rules:
+          - alert: VllmMetricsMissing
+            expr: absent(vllm:prompt_tokens_total) and absent(vllm:prompt_tokens)
+            for: 15m
+            labels:
+              severity: critical
+            annotations:
+              summary: 'vLLM metrics are missing'
+              description: 'Prometheus cannot see vLLM token metrics for at least 15 minutes. Verify vLLM service annotations and scrape path /metrics.'
+
+          - alert: VllmHighTTFTP95
+            expr: histogram_quantile(0.95, sum(rate(vllm:time_to_first_token_seconds_bucket[5m])) by (le)) > 2
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: 'High vLLM TTFT p95'
+              description: 'Time-to-first-token p95 is above 2 seconds for 10 minutes.'
+
+          - alert: VllmHighE2ELatencyP95
+            expr: histogram_quantile(0.95, sum(rate(vllm:e2e_request_latency_seconds_bucket[5m])) by (le)) > 8
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: 'High vLLM end-to-end latency p95'
+              description: 'End-to-end request latency p95 is above 8 seconds for 10 minutes.'
+
+          - alert: VllmRequestQueueHigh
+            expr: (sum(vllm:num_requests_waiting) or sum(vllm:waiting_requests)) > 5
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: 'vLLM queue is growing'
+              description: 'More than 5 requests are waiting in vLLM queue for at least 5 minutes.'
+
+          - alert: VllmLowTokenThroughputUnderLoad
+            expr: ((sum(rate(vllm:prompt_tokens_total[5m])) or sum(rate(vllm:prompt_tokens[5m]))) + (sum(rate(vllm:generation_tokens_total[5m])) or sum(rate(vllm:generation_tokens[5m])))) < 1 and (sum(vllm:num_requests_running) or sum(vllm:running_requests)) > 0
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: 'Low vLLM token throughput under load'
+              description: 'Token throughput is below 1 token/s while there are active requests for at least 15 minutes.'
