@@ -4,6 +4,9 @@ metadata:
   name: minikube-llm
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: minikube-postgres-operator
+    - name: minikube-monitoring
   interval: 10m
   path: ./clusters/minikube/environments/llm
   prune: true
