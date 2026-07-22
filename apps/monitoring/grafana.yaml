@@ -391,6 +391,202 @@ spec:
               "version": 1,
               "weekStart": ""
             }
+        gpu-overview:
+          json: |
+            {
+              "annotations": {"list": []},
+              "editable": true,
+              "fiscalYearStartMonth": 0,
+              "graphTooltip": 0,
+              "panels": [
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "percent",
+                      "min": 0,
+                      "max": 100,
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+                  "id": 21,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "avg(DCGM_FI_DEV_GPU_UTIL) or vector(0)",
+                      "legendFormat": "util",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "GPU Utilization (avg)",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "bytes",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+                  "id": 22,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum(DCGM_FI_DEV_FB_USED) * 1024 * 1024 or vector(0)",
+                      "legendFormat": "used",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "GPU Memory Used",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "bytes",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+                  "id": 23,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "sum(DCGM_FI_DEV_FB_FREE) * 1024 * 1024 or vector(0)",
+                      "legendFormat": "free",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "GPU Memory Free",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "celsius",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+                  "id": 24,
+                  "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "center",
+                    "orientation": "horizontal",
+                    "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                    "textMode": "value"
+                  },
+                  "targets": [
+                    {
+                      "expr": "max(DCGM_FI_DEV_GPU_TEMP) or vector(0)",
+                      "legendFormat": "temp",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "GPU Temperature (max)",
+                  "type": "stat"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "percent",
+                      "min": 0,
+                      "max": 100,
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 10, "w": 12, "x": 0, "y": 8},
+                  "id": 25,
+                  "options": {
+                    "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true},
+                    "tooltip": {"mode": "single", "sort": "none"}
+                  },
+                  "targets": [
+                    {
+                      "expr": "DCGM_FI_DEV_GPU_UTIL",
+                      "legendFormat": "gpu={{gpu}} {{instance}}",
+                      "refId": "A"
+                    }
+                  ],
+                  "title": "GPU Utilization by Device",
+                  "type": "timeseries"
+                },
+                {
+                  "datasource": {"type": "prometheus", "uid": "prometheus"},
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "bytes",
+                      "color": {"mode": "palette-classic"}
+                    },
+                    "overrides": []
+                  },
+                  "gridPos": {"h": 10, "w": 12, "x": 12, "y": 8},
+                  "id": 26,
+                  "options": {
+                    "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true},
+                    "tooltip": {"mode": "single", "sort": "none"}
+                  },
+                  "targets": [
+                    {
+                      "expr": "DCGM_FI_DEV_FB_USED * 1024 * 1024",
+                      "legendFormat": "used gpu={{gpu}} {{instance}}",
+                      "refId": "A"
+                    },
+                    {
+                      "expr": "DCGM_FI_DEV_FB_FREE * 1024 * 1024",
+                      "legendFormat": "free gpu={{gpu}} {{instance}}",
+                      "refId": "B"
+                    }
+                  ],
+                  "title": "GPU Memory by Device",
+                  "type": "timeseries"
+                }
+              ],
+              "schemaVersion": 39,
+              "style": "dark",
+              "tags": ["gpu", "dcgm"],
+              "templating": {"list": []},
+              "time": {"from": "now-1h", "to": "now"},
+              "timepicker": {},
+              "timezone": "",
+              "title": "GPU Overview",
+              "uid": "gpu-overview",
+              "version": 1,
+              "weekStart": ""
+            }
 
     # Pod-level
     securityContext:
