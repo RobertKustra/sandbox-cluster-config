@@ -4,8 +4,8 @@ resources:
   - ../../sources
   - ./flux-system
   - ./environments/operators-postgres.yaml
+  - ./environments/monitoring.yaml
+  - ./environments/llm.yaml
   - ./environments/dev.yaml
   - ./environments/test.yaml
   - ./environments/prod.yaml
-  - ./environments/monitoring.yaml
-  - ./environments/llm.yaml
