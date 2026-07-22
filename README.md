@@ -71,7 +71,7 @@ flux --version
 export GITHUB_TOKEN=<your-github-token>
 
 flux bootstrap github \
-  --owner=<your_favorite_owner> \
+  --owner=RobertKustra \
   --repository=sandbox-cluster-config \
   --branch=development \
   --path=./clusters/minikube \
