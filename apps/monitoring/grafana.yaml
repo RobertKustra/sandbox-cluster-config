@@ -784,7 +784,7 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "100 * (sum(container_memory_working_set_bytes{container!=\"\", image!=\"\"}) / sum(kube_node_status_allocatable{resource=\"memory\",unit=\"byte\"}))",
+                      "expr": "100 * ((sum(container_memory_working_set_bytes{container!=\"\", image!=\"\"}) or sum(container_memory_working_set_bytes{pod!=\"\"}) or sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)) / (sum(kube_node_status_allocatable{resource=\"memory\",unit=\"byte\"}) or sum(machine_memory_bytes) or sum(node_memory_MemTotal_bytes))) or vector(0)",
                       "legendFormat": "memory usage %",
                       "refId": "A"
                     }
@@ -809,12 +809,12 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "sum(rate(container_network_receive_bytes_total{pod!=\"\"}[5m]))",
+                      "expr": "sum(rate(container_network_receive_bytes_total{pod!=\"\"}[5m])) or sum(rate(node_network_receive_bytes_total{device!~\"lo|docker.*|veth.*|cni.*|flannel.*\"}[5m])) or vector(0)",
                       "legendFormat": "rx",
                       "refId": "A"
                     },
                     {
-                      "expr": "sum(rate(container_network_transmit_bytes_total{pod!=\"\"}[5m]))",
+                      "expr": "sum(rate(container_network_transmit_bytes_total{pod!=\"\"}[5m])) or sum(rate(node_network_transmit_bytes_total{device!~\"lo|docker.*|veth.*|cni.*|flannel.*\"}[5m])) or vector(0)",
                       "legendFormat": "tx",
                       "refId": "B"
                     }
@@ -839,7 +839,7 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "topk(10, sum by (namespace) (rate(container_cpu_usage_seconds_total{container!=\"\", image!=\"\"}[5m])))",
+                      "expr": "topk(10, sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\",container!=\"\",container!=\"POD\"}[5m]))) or topk(10, sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\",unit=\"core\"}))",
                       "legendFormat": "{{namespace}}",
                       "refId": "A"
                     }
@@ -864,7 +864,7 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "topk(10, sum by (namespace) (container_memory_working_set_bytes{container!=\"\", image!=\"\"}))",
+                      "expr": "topk(10, sum by (namespace) (container_memory_working_set_bytes{namespace!=\"\",container!=\"\",container!=\"POD\"})) or topk(10, sum by (namespace) (kube_pod_container_resource_requests{resource=\"memory\",unit=\"byte\"}))",
                       "legendFormat": "{{namespace}}",
                       "refId": "A"
                     }
