@@ -7,5 +7,5 @@ resources:
   - ./environments/monitoring.yaml
   - ./environments/llm.yaml
   - ./environments/dev.yaml
-  - ./environments/test.yaml
-  - ./environments/prod.yaml
+  # - ./environments/test.yaml
+  # - ./environments/prod.yaml
