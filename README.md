@@ -10,12 +10,13 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
 - clusters/minikube/environments/monitoring/ - isolated configuration for the monitoring environment
 - clusters/minikube/environments/llm/ - isolated configuration for the llm environment
+- clusters/minikube/environments/namespaces/ - namespace bootstrap package for all environments
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
 - namespaces/base/ - shared namespace manifest
 - namespaces/overlays/dev/, namespaces/overlays/test/, namespaces/overlays/prod/ - namespace overlays per environment
 - namespaces/monitoring/ - monitoring namespace package
-- apps/base/ - shared application manifests reused across environments
-- apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays for application manifests
+- apps/sandbox-ai-consumer/base/, apps/sandbox-nginx/base/, apps/sandbox-redis/base/ - per-application base packages
+- apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays composing per-application packages
 - apps/llm/ - sandbox-vllm application package (HelmRelease + ingress)
 - apps/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
