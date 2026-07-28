@@ -37,11 +37,13 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "8192"
+        - "16384"
         - --max-num-seqs
         - "4"
         - --gpu-memory-utilization
         - "0.6"
+        - --served-model-name
+        - ziutek_2.0
 
     env:
       - name: HF_TOKEN
