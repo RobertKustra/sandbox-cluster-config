@@ -37,11 +37,11 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "4096"
+        - "2048"
         - --max-num-seqs
         - "1"
         - --gpu-memory-utilization
-        - "0.6"
+        - "0.45"
 
     env:
       - name: HF_TOKEN
