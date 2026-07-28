@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sandbox-redis
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: charts/sandbox-redis
+      version: "0.1.0"
+      sourceRef:
+        kind: GitRepository
+        name: sandbox-helm-charts
+        namespace: flux-system
+  values:
+    auth:
+      enabled: true
+      existingSecret: sandbox-redis-auth
+      existingSecretPasswordKey: sandbox-redis-password
+  valuesFrom:
+    - kind: ConfigMap
+      name: sandbox-redis-values-base
+    - kind: ConfigMap
+      name: sandbox-redis-values-env

@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
+    - name: minikube-namespaces
     - name: minikube-postgres-operator
     - name: minikube-monitoring
   interval: 10m

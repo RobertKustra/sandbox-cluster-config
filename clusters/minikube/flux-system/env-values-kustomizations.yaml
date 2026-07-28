@@ -5,6 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  dependsOn:
+    - name: minikube-namespaces
   sourceRef:
     kind: GitRepository
     name: sandbox-env-values
@@ -21,6 +23,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  dependsOn:
+    - name: minikube-namespaces
   sourceRef:
     kind: GitRepository
     name: sandbox-env-values
@@ -37,6 +41,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  dependsOn:
+    - name: minikube-namespaces
   sourceRef:
     kind: GitRepository
     name: sandbox-env-values

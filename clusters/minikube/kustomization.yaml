@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../sources
   - ./flux-system
+  - ./environments/namespaces.yaml
   - ./environments/operators-postgres.yaml
   - ./environments/monitoring.yaml
   - ./environments/llm.yaml
