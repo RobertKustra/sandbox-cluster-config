@@ -44,7 +44,6 @@ spec:
         - "0.6"
         - --served-model-name
         - ziutek_2.0
-        - --disable-log-stats
 
     env:
       - name: HF_TOKEN
