@@ -8,7 +8,7 @@ resources:
 secretGenerator:
   - name: sandbox-redis-auth
     literals:
-      - sandbox-redis-password=dev-change-me
+      - sandbox-redis-password=vllm-change-me
 generatorOptions:
   disableNameSuffixHash: true
 patches:
