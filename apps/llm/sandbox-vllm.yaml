@@ -41,7 +41,7 @@ spec:
         - --max-num-seqs
         - "4"
         - --gpu-memory-utilization
-        - "0.45"
+        - "0.6"
 
     env:
       - name: VLLM_USE_V2_MODEL_RUNNER
