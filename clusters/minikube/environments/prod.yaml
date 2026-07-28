@@ -14,6 +14,15 @@ spec:
   path: ./clusters/minikube/environments/prod
   prune: true
   wait: true
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: sandbox-nginx
+      namespace: prod
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: sandbox-redis
+      namespace: prod
   timeout: 5m0s
   sourceRef:
     kind: GitRepository
