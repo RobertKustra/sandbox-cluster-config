@@ -4,3 +4,9 @@ namespace: llm
 resources:
   - ./sandbox-vllm.yaml
   - ./sandbox-vllm-ingress.yaml
+secretGenerator:
+  - name: hf-token
+    literals:
+      - HF_TOKEN=dev-change-me
+generatorOptions:
+  disableNameSuffixHash: true

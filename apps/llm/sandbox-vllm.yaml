@@ -44,6 +44,11 @@ spec:
         - "0.6"
 
     env:
+      - name: HF_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: hf-token
+            key: HF_TOKEN
       - name: VLLM_USE_V2_MODEL_RUNNER
         value: "0"
       - name: PYTORCH_CUDA_ALLOC_CONF
