@@ -24,9 +24,10 @@ Flux GitOps configuration for the Sandbox cluster.
 ## Flow
 
 1. Flux reads the GitRepository sources from this repository.
-2. Each environment is isolated in its own subdirectory under the Minikube cluster folder.
-3. The cluster entrypoint references dev, test, prod, monitoring, and llm independently.
-4. Each HelmRelease pulls values from the matching path in the sandbox-env-values repository.
+2. The `minikube-namespaces` stage creates all target namespaces first.
+3. The `sandbox-env-values-<env>` stages generate ConfigMaps with Helm values in each environment namespace.
+4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads and wait for HelmRelease health checks.
+5. The cluster entrypoint references dev, test, prod, monitoring, llm, and namespace bootstrap independently.
 
 ## LLM deployment
 
@@ -117,6 +118,12 @@ flux reconcile source git sandbox-helm-charts -n flux-system
 flux reconcile source git sandbox-env-values -n flux-system
 flux reconcile kustomization sandbox-cluster-config -n flux-system --with-source
 
+# Core staged kustomizations
+flux reconcile kustomization minikube-namespaces -n flux-system --with-source
+flux reconcile kustomization minikube-dev -n flux-system --with-source
+flux reconcile kustomization minikube-test -n flux-system --with-source
+flux reconcile kustomization minikube-prod -n flux-system --with-source
+
 # Optional per-environment values overlays
 flux reconcile kustomization sandbox-env-values-dev -n flux-system --with-source
 flux reconcile kustomization sandbox-env-values-test -n flux-system --with-source
@@ -137,7 +144,9 @@ flux describe kustomization sandbox-cluster-config -n flux-system
 
 # 3) Verify HelmRelease state and chart version in use
 flux get helmreleases -A
-flux describe helmrelease sandbox-ai-consumer -n default
+flux describe helmrelease sandbox-ai-consumer -n dev
+flux describe helmrelease sandbox-ai-consumer -n test
+flux describe helmrelease sandbox-ai-consumer -n prod
 
 # 4) Force re-fetch and reconcile if needed
 flux reconcile source git sandbox-helm-charts -n flux-system
