@@ -12,8 +12,7 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/llm/ - isolated configuration for the llm environment
 - clusters/minikube/environments/namespaces/ - namespace bootstrap package for all environments
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
-- namespaces/base/ - shared namespace manifest
-- namespaces/overlays/dev/, namespaces/overlays/test/, namespaces/overlays/prod/ - namespace overlays per environment
+- namespaces/dev/, namespaces/test/, namespaces/prod/, namespaces/llm/ - simplified namespace packages per environment
 - namespaces/monitoring/ - monitoring namespace package
 - apps/sandbox-ai-consumer/base/, apps/sandbox-nginx/base/, apps/sandbox-redis/base/ - per-application base packages
 - apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays composing per-application packages

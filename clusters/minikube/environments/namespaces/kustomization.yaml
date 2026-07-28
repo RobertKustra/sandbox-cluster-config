@@ -1,8 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../../../../namespaces/overlays/dev
-  - ../../../../namespaces/overlays/test
-  - ../../../../namespaces/overlays/prod
-  - ../../../../namespaces/overlays/llm
+  - ../../../../namespaces/dev
+  - ../../../../namespaces/test
+  - ../../../../namespaces/prod
+  - ../../../../namespaces/llm
   - ../../../../namespaces/monitoring
