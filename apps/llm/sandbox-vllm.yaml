@@ -29,7 +29,7 @@ spec:
 
     model:
       args:
-        - Qwen/Qwen2.5-Coder-7B-Instruct
+        - Qwen/Qwen2.5-Coder-3B-Instruct
         - --host
         - 0.0.0.0
         - --port
@@ -37,11 +37,11 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "2048"
+        - "8192"
         - --max-num-seqs
-        - "1"
+        - "4"
         - --gpu-memory-utilization
-        - "0.45"
+        - "0.6"
 
     env:
       - name: HF_TOKEN
