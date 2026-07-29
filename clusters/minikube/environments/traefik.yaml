@@ -1,15 +1,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: minikube-monitoring
+  name: minikube-traefik
   namespace: flux-system
 spec:
   interval: 10m
   dependsOn:
     - name: minikube-namespaces
-    - name: minikube-cert-manager-issuers
-    - name: minikube-traefik
-  path: ./clusters/minikube/environments/monitoring
+  path: ./clusters/minikube/environments/traefik
   prune: true
   wait: true
   timeout: 5m0s
@@ -19,4 +17,4 @@ spec:
   postBuild:
     substitute:
       cluster: minikube
-      environment: monitoring
+      environment: traefik

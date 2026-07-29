@@ -8,6 +8,7 @@ resources:
   - ./environments/operators-postgres.yaml
   - ./environments/cert-manager.yaml
   - ./environments/cert-manager-issuers.yaml
+  - ./environments/traefik.yaml
   - ./environments/monitoring.yaml
   - ./environments/llm.yaml
   ## Environments for different stages

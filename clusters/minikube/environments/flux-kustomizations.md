@@ -7,6 +7,7 @@ Each environment (and shared operator package) has its own Flux Kustomization ma
 - prod.yaml for the prod environment
 - monitoring.yaml for the monitoring environment
 - llm.yaml for the llm environment
+- traefik.yaml for the Traefik ingress controller
 - operators-postgres.yaml for PostgreSQL operator resources
 
 These manifests target isolated paths under the Minikube cluster folder and can be applied directly by Flux.

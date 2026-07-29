@@ -6,3 +6,4 @@ resources:
   - ../../../../namespaces/prod
   - ../../../../namespaces/llm
   - ../../../../namespaces/monitoring
+  - ../../../../namespaces/traefik
