@@ -58,9 +58,9 @@ spec:
 
     probes:
       startup:
-        initialDelaySeconds: 120
+        initialDelaySeconds: 220
         periodSeconds: 15
-        failureThreshold: 120
+        failureThreshold: 240
         timeoutSeconds: 5
       readiness:
         initialDelaySeconds: 5
