@@ -4,8 +4,13 @@ metadata:
   name: sandbox-nginx-ingress
   annotations:
     kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: sandbox-ca-issuer
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - sandbox-nginx.local
+      secretName: sandbox-nginx-tls
   rules:
     - host: sandbox-nginx.local
       http:

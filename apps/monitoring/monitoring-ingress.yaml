@@ -5,8 +5,13 @@ metadata:
   namespace: monitoring
   annotations:
     kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: sandbox-ca-issuer
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - grafana.monitoring.local
+      secretName: grafana-tls
   rules:
     - host: grafana.monitoring.local
       http:
@@ -26,8 +31,13 @@ metadata:
   namespace: monitoring
   annotations:
     kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: sandbox-ca-issuer
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - alertmanager.monitoring.local
+      secretName: alertmanager-tls
   rules:
     - host: alertmanager.monitoring.local
       http:
@@ -47,8 +57,13 @@ metadata:
   namespace: monitoring
   annotations:
     kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: sandbox-ca-issuer
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - jaeger.monitoring.local
+      secretName: jaeger-tls
   rules:
     - host: jaeger.monitoring.local
       http:

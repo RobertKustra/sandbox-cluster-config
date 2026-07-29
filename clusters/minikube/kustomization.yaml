@@ -5,6 +5,7 @@ resources:
   - ./flux-system
   - ./environments/namespaces.yaml
   - ./environments/operators-postgres.yaml
+  - ./environments/cert-manager.yaml
   - ./environments/monitoring.yaml
   - ./environments/llm.yaml
   - ./environments/dev.yaml
