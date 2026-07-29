@@ -3,11 +3,14 @@ kind: Kustomization
 resources:
   - ../../sources
   - ./flux-system
+  ## Core modules for kubernetes cluster
   - ./environments/namespaces.yaml
   - ./environments/operators-postgres.yaml
   - ./environments/cert-manager.yaml
+  - ./environments/cert-manager-issuers.yaml
   - ./environments/monitoring.yaml
   - ./environments/llm.yaml
+  ## Environments for different stages
   - ./environments/dev.yaml
   - ./environments/test.yaml
   - ./environments/prod.yaml
