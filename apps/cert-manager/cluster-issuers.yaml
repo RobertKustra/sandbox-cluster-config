@@ -1,4 +1,4 @@
-# Self-signed root CA ClusterIssuer — used to bootstrap the sandbox-ca Certificate.
+# Self-signed root CA ClusterIssuer - used to bootstrap the sandbox-ca Certificate.
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
