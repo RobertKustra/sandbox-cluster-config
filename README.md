@@ -41,23 +41,35 @@ The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
 
 ## GitHub + SSH access for Flux
 
-## External Secrets with GitHub
+## Secrets with SOPS + age
 
-The minikube cluster now includes an External Secrets operator install path under [clusters/minikube/external-secrets](clusters/minikube/external-secrets).
+This repository uses Flux, so the simplest secrets workflow is to keep Kubernetes `Secret` manifests encrypted in Git with SOPS and decrypt them in-cluster with Flux.
 
-### What is configured
-- External Secrets Operator is installed via Flux HelmRelease.
-- A placeholder SecretStore example is available at [clusters/minikube/external-secrets/secretstore-github.yaml](clusters/minikube/external-secrets/secretstore-github.yaml).
-- The operator is included from the minikube cluster entrypoint.
+### Why this approach
+1. It works with public repositories.
+2. It does not require GitHub Actions secrets as a runtime backend for the cluster.
+3. It avoids the operational overhead of running Vault for a small Minikube-based GitOps setup.
 
-### What you still need to set up in GitHub
-1. Create a GitHub token with access to the repository or organization that stores the secrets you want to consume.
-2. Replace the placeholder value in [clusters/minikube/external-secrets/secretstore-github.yaml](clusters/minikube/external-secrets/secretstore-github.yaml) with a real token or move the secret source to a more secure location.
-3. If you want Flux or workloads to consume values from GitHub-managed secrets, define one or more ExternalSecret resources that map the remote values into Kubernetes Secrets.
+### Recommended setup
+1. Generate an age key pair locally.
+2. Create a `sops-age` secret in the `flux-system` namespace from the private key.
+3. Copy [clusters/minikube/.sops.yaml.example](clusters/minikube/.sops.yaml.example) to `clusters/minikube/.sops.yaml` and replace the placeholder recipient with your age public key.
+4. Add `spec.decryption.provider: sops` and `spec.decryption.secretRef.name: sops-age` to the Flux Kustomization after the secret exists in the cluster.
+5. Encrypt only `data` and `stringData` fields in Kubernetes `Secret` manifests.
 
-### Current status
-- The manifests render successfully with kustomize.
-- The operator is ready to be applied by Flux once the secret source is configured.
+### Example bootstrap
+
+```bash
+age-keygen -o age.agekey
+
+cat age.agekey | kubectl create secret generic sops-age \
+  --namespace=flux-system \
+  --from-file=age.agekey=/dev/stdin
+```
+
+### Important note
+
+Do not enable Flux decryption before the `sops-age` secret exists in the cluster. Otherwise the main Flux Kustomization will fail reconciliation.
 
 
 This setup uses GitHub SSH for the Flux GitRepository sources and the ongoing Git sync. The bootstrap command itself still needs a GitHub token (PAT) for the GitHub API when creating or configuring the repository, but the later Flux sync uses the SSH key stored in the flux-system secret.
