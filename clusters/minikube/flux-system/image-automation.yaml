@@ -6,6 +6,8 @@ metadata:
 spec:
   interval: 1m
   image: ghcr.io/robertkustra/dev/sandbox-ai-consumer
+  secretRef:
+    name: ghcr-pull-secret
 ---
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
@@ -27,6 +29,8 @@ metadata:
 spec:
   interval: 1m
   image: ghcr.io/robertkustra/prod/sandbox-ai-consumer
+  secretRef:
+    name: ghcr-pull-secret
 ---
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
