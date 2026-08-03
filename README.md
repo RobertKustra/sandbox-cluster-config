@@ -41,6 +41,25 @@ The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
 
 ## GitHub + SSH access for Flux
 
+## External Secrets with GitHub
+
+The minikube cluster now includes an External Secrets operator install path under [clusters/minikube/external-secrets](clusters/minikube/external-secrets).
+
+### What is configured
+- External Secrets Operator is installed via Flux HelmRelease.
+- A placeholder SecretStore example is available at [clusters/minikube/external-secrets/secretstore-github.yaml](clusters/minikube/external-secrets/secretstore-github.yaml).
+- The operator is included from the minikube cluster entrypoint.
+
+### What you still need to set up in GitHub
+1. Create a GitHub token with access to the repository or organization that stores the secrets you want to consume.
+2. Replace the placeholder value in [clusters/minikube/external-secrets/secretstore-github.yaml](clusters/minikube/external-secrets/secretstore-github.yaml) with a real token or move the secret source to a more secure location.
+3. If you want Flux or workloads to consume values from GitHub-managed secrets, define one or more ExternalSecret resources that map the remote values into Kubernetes Secrets.
+
+### Current status
+- The manifests render successfully with kustomize.
+- The operator is ready to be applied by Flux once the secret source is configured.
+
+
 This setup uses GitHub SSH for the Flux GitRepository sources and the ongoing Git sync. The bootstrap command itself still needs a GitHub token (PAT) for the GitHub API when creating or configuring the repository, but the later Flux sync uses the SSH key stored in the flux-system secret.
 
 Run the helper script below to generate an SSH key, create the Kubernetes secret for Flux, and print the public key that must be added to GitHub.
