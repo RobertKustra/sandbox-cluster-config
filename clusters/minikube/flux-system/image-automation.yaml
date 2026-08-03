@@ -43,7 +43,7 @@ spec:
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageUpdateAutomation
 metadata:
-  name: sandbox-env-values
+  name: sandbox-env-values-dev
   namespace: flux-system
 spec:
   interval: 1m
@@ -69,5 +69,37 @@ spec:
     push:
       branch: development
   update:
-    path: ./overlays
+    path: ./overlays/dev
+    strategy: Setters
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: sandbox-env-values-prod
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+  git:
+    checkout:
+      ref:
+        branch: development
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcdbot
+      messageTemplate: |
+        chore: update sandbox image tags
+
+        Automation: {{ .AutomationObject }}
+        Changed files:
+        {{- range $file, $_ := .Changed.FileChanges }}
+        - {{ $file }}
+        {{- end }}
+    push:
+      branch: development
+  update:
+    path: ./overlays/prod
     strategy: Setters
