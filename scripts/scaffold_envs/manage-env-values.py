@@ -850,6 +850,97 @@ def sync_cluster_environment_entries(cluster_kustomization: Path, environment_na
     cluster_kustomization.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
 
 
+def ensure_cluster_environment_entries_present(cluster_kustomization: Path, environment_names: list[str]) -> None:
+    if not cluster_kustomization.is_file():
+        err(f"required file not found: {cluster_kustomization}")
+
+    lines = cluster_kustomization.read_text(encoding="utf-8").splitlines()
+    changed = False
+
+    for env in environment_names:
+        active_line = f"  - ./environments/{env}.yaml"
+        commented_line = f"#  - ./environments/{env}.yaml"
+
+        active_indexes = [index for index, line in enumerate(lines) if line.strip() == active_line.strip()]
+        if active_indexes:
+            continue
+
+        commented_indexes = [index for index, line in enumerate(lines) if line.strip() == commented_line.strip()]
+        if commented_indexes:
+            lines[commented_indexes[0]] = active_line
+            changed = True
+            continue
+
+        inserted = False
+        for index, line in enumerate(lines):
+            if line == CLUSTER_ENV_SECTION_MARKER:
+                lines.insert(index + 1, active_line)
+                inserted = True
+                changed = True
+                break
+        if not inserted:
+            lines.extend(["", CLUSTER_ENV_SECTION_MARKER, active_line])
+            changed = True
+
+    if changed:
+        cluster_kustomization.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def split_yaml_documents(payload: str) -> list[str]:
+    docs = [part.strip() for part in payload.split("---")]
+    return [doc for doc in docs if doc]
+
+
+def extract_image_update_automation_name(doc: str) -> str | None:
+    if not re.search(r"^kind:\s*ImageUpdateAutomation\s*$", doc, flags=re.MULTILINE):
+        return None
+
+    metadata_match = re.search(r"^metadata:\s*$([\s\S]*?)(?:^spec:\s*$|\Z)", doc, flags=re.MULTILINE)
+    if not metadata_match:
+        return None
+
+    name_match = re.search(r"^\s*name:\s*([^\s#]+)\s*$", metadata_match.group(1), flags=re.MULTILINE)
+    if not name_match:
+        return None
+    return name_match.group(1)
+
+
+def merge_image_update_automation_docs(existing_payload: str, generated_payload: str) -> str:
+    existing_docs = split_yaml_documents(existing_payload)
+    generated_docs = split_yaml_documents(generated_payload)
+
+    generated_by_name: dict[str, str] = {}
+    for doc in generated_docs:
+        name = extract_image_update_automation_name(doc)
+        if name is not None:
+            generated_by_name[name] = doc
+
+    used_names: set[str] = set()
+    merged_docs: list[str] = []
+
+    for doc in existing_docs:
+        name = extract_image_update_automation_name(doc)
+        if name is None:
+            merged_docs.append(doc)
+            continue
+
+        replacement = generated_by_name.get(name)
+        if replacement is not None:
+            merged_docs.append(replacement)
+            used_names.add(name)
+        else:
+            # Keep unmanaged environments untouched.
+            merged_docs.append(doc)
+
+    for name, doc in generated_by_name.items():
+        if name not in used_names:
+            merged_docs.append(doc)
+
+    if not merged_docs:
+        return ""
+    return "\n---\n".join(merged_docs) + "\n"
+
+
 def set_flux_system_resource_reference(flux_kustomization: Path, resource_path: str, enabled: bool) -> None:
     if not flux_kustomization.is_file():
         err(f"required file not found: {flux_kustomization}")
@@ -926,15 +1017,17 @@ def apply_scaffold_config(
             sync_service_values_file(overlay_dir, service, environment)
 
     environment_names = [environment.name for environment in config.environments]
-    sync_cluster_environment_entries(cluster_kustomization, environment_names)
-    generate_env_values_kustomizations_from_names(environment_names, env_values_kustomizations)
+    ensure_cluster_environment_entries_present(cluster_kustomization, environment_names)
+    generate_env_values_kustomizations(cluster_kustomization, env_values_kustomizations)
 
     image_automation_payload = render_image_automation_file(config.environments)
-    if image_automation_payload:
-        write_text_file(image_automation_file, image_automation_payload)
-    else:
-        write_text_file(image_automation_file, "# No image automation resources are enabled by scaffold config.\n")
-    set_flux_system_resource_reference(flux_system_kustomization, "./image-automation.yaml", bool(image_automation_payload))
+    existing_payload = image_automation_file.read_text(encoding="utf-8") if image_automation_file.exists() else ""
+    merged_payload = merge_image_update_automation_docs(existing_payload, image_automation_payload)
+    if merged_payload:
+        write_text_file(image_automation_file, merged_payload)
+    elif image_automation_file.exists():
+        image_automation_file.unlink()
+    set_flux_system_resource_reference(flux_system_kustomization, "./image-automation.yaml", bool(merged_payload))
 
     return config
 
