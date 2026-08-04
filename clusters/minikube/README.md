@@ -25,6 +25,31 @@ The Minikube entrypoint also deploys one `PostgresCluster` named `sandbox-postgr
 
 The manifests live under `postgres/overlays/<env>` and are included by the matching files in `environments/<env>/kustomization.yaml`.
 
+## Environment scaffold workflow
+
+`clusters/minikube/kustomization.yaml` is the source of truth for which environments are active on this cluster.
+
+Use the helper script to keep Flux `sandbox-env-values-<env>` manifests in sync with enabled environment entries:
+
+```bash
+./scripts/manage-env-values.py sync
+```
+
+Create a new environment scaffold from dedicated templates:
+
+```bash
+./scripts/manage-env-values.py scaffold <env>
+```
+
+The scaffold command will:
+
+- create `sandbox-env-values/overlays/<env>` from template files in `templates/scaffold/env-values-overlay/`
+- create `clusters/minikube/environments/<env>.yaml` from `templates/scaffold/minikube-environment.yaml`
+- add a commented `./environments/<env>.yaml` entry to `clusters/minikube/kustomization.yaml`
+- regenerate `clusters/minikube/flux-system/env-values-kustomizations.yaml`
+
+To activate the new environment on Minikube, uncomment the generated line in `clusters/minikube/kustomization.yaml` and run `./scripts/manage-env-values.py sync`.
+
 ### Useful commands
 
 ```bash

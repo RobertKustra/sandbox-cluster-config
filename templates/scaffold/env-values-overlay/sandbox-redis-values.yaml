@@ -1,0 +1,3 @@
+master:
+  persistence:
+    enabled: false

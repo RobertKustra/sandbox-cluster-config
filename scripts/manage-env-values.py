@@ -3,13 +3,13 @@ from __future__ import annotations
 
 import argparse
 import re
-import shutil
 import sys
 from pathlib import Path
 
 
 ENV_LINE_RE = re.compile(r"^\s*-\s*\./environments/([a-zA-Z0-9._-]+)\.yaml\s*$")
 ENV_NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
+ENV_TOKEN = "__ENV__"
 
 
 def err(message: str) -> None:
@@ -67,43 +67,39 @@ def generate_env_values_kustomizations(minikube_kustomization: Path, output_file
     return environments
 
 
-def replace_word_in_file(file_path: Path, old_word: str, new_word: str) -> None:
-    content = file_path.read_text(encoding="utf-8")
-    updated = re.sub(rf"\b{re.escape(old_word)}\b", new_word, content)
-    file_path.write_text(updated, encoding="utf-8")
+def render_template_file(template_file: Path, target_file: Path, env: str) -> None:
+    content = template_file.read_text(encoding="utf-8")
+    content = content.replace(ENV_TOKEN, env)
+    target_file.write_text(content, encoding="utf-8")
 
 
-def scaffold_env_values_overlay(env_values_repo_root: Path, env: str) -> Path:
-    source_dir = env_values_repo_root / "overlays" / "dev"
+def scaffold_env_values_overlay(template_dir: Path, env_values_repo_root: Path, env: str) -> Path:
     target_dir = env_values_repo_root / "overlays" / env
 
-    if not source_dir.is_dir():
-        err(f"required directory not found: {source_dir}")
+    if not template_dir.is_dir():
+        err(f"required template directory not found: {template_dir}")
     if target_dir.exists():
         err(f"target overlay already exists: {target_dir}")
 
-    shutil.copytree(source_dir, target_dir)
-    replace_word_in_file(target_dir / "kustomization.yaml", "dev", env)
-    replace_word_in_file(target_dir / "namespace.yaml", "dev", env)
+    target_dir.mkdir(parents=True, exist_ok=False)
+
+    for template_file in sorted(template_dir.iterdir()):
+        if not template_file.is_file():
+            continue
+        render_template_file(template_file, target_dir / template_file.name, env)
+
     return target_dir
 
 
-def scaffold_cluster_environment_manifest(cluster_repo_root: Path, env: str) -> Path:
-    source_file = cluster_repo_root / "clusters" / "minikube" / "environments" / "dev.yaml"
+def scaffold_cluster_environment_manifest(template_file: Path, cluster_repo_root: Path, env: str) -> Path:
     target_file = cluster_repo_root / "clusters" / "minikube" / "environments" / f"{env}.yaml"
 
-    if not source_file.is_file():
-        err(f"required file not found: {source_file}")
+    if not template_file.is_file():
+        err(f"required template file not found: {template_file}")
     if target_file.exists():
         err(f"cluster environment manifest already exists: {target_file}")
 
-    content = source_file.read_text(encoding="utf-8")
-    content = content.replace("minikube-dev", f"minikube-{env}")
-    content = content.replace("sandbox-env-values-dev", f"sandbox-env-values-{env}")
-    content = content.replace("/environments/dev", f"/environments/{env}")
-    content = content.replace("namespace: dev", f"namespace: {env}")
-    content = content.replace("environment: dev", f"environment: {env}")
-    target_file.write_text(content, encoding="utf-8")
+    render_template_file(template_file, target_file, env)
     return target_file
 
 
@@ -133,7 +129,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
             "Generate Flux env-values kustomizations from enabled environments "
-            "and scaffold new environments from dev templates."
+            "and scaffold new environments from dedicated templates."
         )
     )
     parser.add_argument(
@@ -141,7 +137,7 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="?",
         default="sync",
         choices=["sync", "scaffold"],
-        help="sync generates env-values-kustomizations.yaml; scaffold creates a new environment template",
+        help="sync generates env-values-kustomizations.yaml; scaffold creates a new environment from dedicated templates",
     )
     parser.add_argument("environment", nargs="?", help="environment name for scaffold command")
     parser.add_argument(
@@ -158,6 +154,9 @@ def main() -> int:
     script_dir = Path(__file__).resolve().parent
     cluster_repo_root = script_dir.parent
     repos_root = cluster_repo_root.parent
+    template_root = cluster_repo_root / "templates" / "scaffold"
+    env_values_overlay_template_dir = template_root / "env-values-overlay"
+    minikube_environment_template_file = template_root / "minikube-environment.yaml"
 
     minikube_kustomization = cluster_repo_root / "clusters" / "minikube" / "kustomization.yaml"
     output_file = cluster_repo_root / "clusters" / "minikube" / "flux-system" / "env-values-kustomizations.yaml"
@@ -176,8 +175,8 @@ def main() -> int:
     env = args.environment
     validate_environment_name(env)
 
-    overlay_path = scaffold_env_values_overlay(env_values_repo_root, env)
-    manifest_path = scaffold_cluster_environment_manifest(cluster_repo_root, env)
+    overlay_path = scaffold_env_values_overlay(env_values_overlay_template_dir, env_values_repo_root, env)
+    manifest_path = scaffold_cluster_environment_manifest(minikube_environment_template_file, cluster_repo_root, env)
     inserted = add_environment_reference_if_missing(minikube_kustomization, env)
     environments = generate_env_values_kustomizations(minikube_kustomization, output_file)
 
