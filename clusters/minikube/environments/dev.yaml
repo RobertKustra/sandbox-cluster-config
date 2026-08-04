@@ -21,6 +21,10 @@ spec:
       kind: HelmRelease
       name: sandbox-redis
       namespace: dev
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: sandbox-ai-consumer
+      namespace: dev
   timeout: 5m0s
   sourceRef:
     kind: GitRepository

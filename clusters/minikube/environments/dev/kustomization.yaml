@@ -4,3 +4,4 @@ resources:
   - ../../../../apps/sandbox-nginx/overlays/dev
   - ../../../../apps/sandbox-redis/overlays/dev
   - ../../../../postgres/overlays/dev
+  - ../../../../apps/sandbox-ai-consumer/overlays/dev
