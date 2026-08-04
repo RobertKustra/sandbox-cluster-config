@@ -1,0 +1,10 @@
+cluster: minikube
+environments:
+  - name: test
+    services:
+      - name: sandbox-nginx
+        tag: "1.25"
+      - name: sandbox-redis
+        tag: "7.2.5"
+      - name: postgres
+    image_updater: false

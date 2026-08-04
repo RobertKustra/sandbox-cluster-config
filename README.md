@@ -47,10 +47,59 @@ Scaffold a new environment from dedicated templates:
 ./scripts/manage-env-values.py scaffold <env>
 ```
 
+Apply a YAML scaffold config that declares the cluster, environments, enabled services, service tags, and per-environment image updater:
+
+```bash
+./scripts/manage-env-values.py scaffold-config ./templates/scaffold/cluster-config.example.yaml
+```
+
 Template sources:
 
 - `templates/scaffold/env-values-overlay/` for `sandbox-env-values/overlays/<env>`
 - `templates/scaffold/minikube-environment.yaml` for `clusters/minikube/environments/<env>.yaml`
+- `templates/scaffold/cluster-config.example.yaml` for the YAML input schema
+
+Example scaffold config:
+
+```yaml
+cluster: minikube
+environments:
+  - name: dev
+    services:
+      - name: sandbox-nginx
+        tag: "1.25"
+      - name: sandbox-redis
+        tag: "7.2.5"
+      - name: postgres
+    image_updater: false
+  - name: prod
+    services:
+      - name: sandbox-nginx
+        tag: "1.25"
+      - name: sandbox-redis
+        tag: "7.2.5"
+      - name: sandbox-ai-consumer
+        tag: "0.2.2"
+        image_repository_prefix: prod
+      - name: postgres
+    image_updater: true
+```
+
+Service entry fields:
+
+- `name`: service identifier used by the scaffold
+- `tag`: image tag to write into the generated env values file
+- `image_repository_prefix`: optional image path selector for services that support multiple registries or paths; for `sandbox-ai-consumer` this maps to `ghcr.io/robertkustra/<prefix>/sandbox-ai-consumer` and defaults to the environment name
+
+The YAML-driven scaffold command will:
+
+- update `clusters/<cluster>/environments/<env>/kustomization.yaml` from the declared service list
+- update `clusters/<cluster>/environments/<env>.yaml` with health checks only for selected Helm-based services
+- update `sandbox-env-values/overlays/<env>/kustomization.yaml` and `namespace.yaml`
+- create missing per-service values files in `sandbox-env-values/overlays/<env>/` and update managed `image` blocks from the declared service tags
+- regenerate `clusters/<cluster>/flux-system/env-values-kustomizations.yaml`
+- regenerate `clusters/<cluster>/flux-system/image-automation.yaml` only for environments that enable `image_updater` and only for services that support image automation; `sandbox-ai-consumer` uses the configured `image_repository_prefix`
+- add or remove the `image-automation.yaml` reference in `clusters/<cluster>/flux-system/kustomization.yaml`
 
 The scaffold command adds a commented environment line to `clusters/minikube/kustomization.yaml`. Uncomment it when you want the environment to be reconciled on the cluster.
 

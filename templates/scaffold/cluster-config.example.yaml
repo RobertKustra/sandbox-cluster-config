@@ -1,0 +1,21 @@
+cluster: minikube
+environments:
+  - name: dev
+    services:
+      - name: sandbox-nginx
+        tag: "1.25"
+      - name: sandbox-redis
+        tag: "7.2.5"
+      - name: postgres
+    image_updater: false
+  - name: prod
+    services:
+      - name: sandbox-nginx
+        tag: "1.25"
+      - name: sandbox-redis
+        tag: "7.2.5"
+      - name: sandbox-ai-consumer
+        tag: "0.2.2"
+        image_repository_prefix: prod
+      - name: postgres
+    image_updater: true

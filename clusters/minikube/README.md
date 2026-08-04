@@ -41,12 +41,27 @@ Create a new environment scaffold from dedicated templates:
 ./scripts/manage-env-values.py scaffold <env>
 ```
 
+Apply a YAML scaffold config when each environment should install a different subset of services:
+
+```bash
+./scripts/manage-env-values.py scaffold-config ./templates/scaffold/cluster-config.example.yaml
+```
+
 The scaffold command will:
 
 - create `sandbox-env-values/overlays/<env>` from template files in `templates/scaffold/env-values-overlay/`
 - create `clusters/minikube/environments/<env>.yaml` from `templates/scaffold/minikube-environment.yaml`
 - add a commented `./environments/<env>.yaml` entry to `clusters/minikube/kustomization.yaml`
 - regenerate `clusters/minikube/flux-system/env-values-kustomizations.yaml`
+
+The YAML-driven scaffold command additionally:
+
+- derives `clusters/minikube/environments/<env>/kustomization.yaml` from the declared service list
+- derives Flux `healthChecks` from the selected Helm-based services only
+- writes image tags from the service entries into the environment values overlays
+- lets `sandbox-ai-consumer` choose `ghcr.io/robertkustra/<prefix>/sandbox-ai-consumer` through `image_repository_prefix`
+- enables image automation only for environments that explicitly set `image_updater: true`
+- omits `ImageRepository` and `ImagePolicy` objects for services that are not installed in a given environment
 
 To activate the new environment on Minikube, uncomment the generated line in `clusters/minikube/kustomization.yaml` and run `./scripts/manage-env-values.py sync`.
 
