@@ -10,9 +10,7 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/dev/ - isolated configuration for the dev environment
 - clusters/minikube/environments/test/ - isolated configuration for the test environment
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
-- clusters/minikube/environments/monitoring/ - isolated configuration for the monitoring environment
-- clusters/minikube/environments/llm/ - isolated configuration for the llm environment
-- clusters/minikube/environments/namespaces/ - namespace bootstrap package for all environments
+- cluster-components/ - shared cluster-level components (namespaces, cert-manager, traefik, monitoring, llm, and operator bootstrap)
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
 - namespaces/dev/, namespaces/test/, namespaces/prod/, namespaces/llm/ - simplified namespace packages per environment
 - namespaces/monitoring/ - monitoring namespace package
@@ -160,8 +158,8 @@ The Minikube cluster already includes the Crunchy Postgres Operator from `utils/
 kustomize build clusters/minikube/environments/dev
 kustomize build clusters/minikube/environments/test
 kustomize build clusters/minikube/environments/prod
-kustomize build clusters/minikube/environments/monitoring
-kustomize build clusters/minikube/environments/llm
+kustomize build cluster-components/monitoring
+kustomize build cluster-components/llm
 kustomize build clusters/minikube
 ```
 

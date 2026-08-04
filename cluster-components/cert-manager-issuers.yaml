@@ -7,7 +7,7 @@ spec:
   interval: 10m
   dependsOn:
     - name: minikube-cert-manager
-  path: ./clusters/minikube/environments/cert-manager-issuers
+  path: ./cluster-components/cert-manager-issuers
   prune: true
   wait: true
   timeout: 5m0s
