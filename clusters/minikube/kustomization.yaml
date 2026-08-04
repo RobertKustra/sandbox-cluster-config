@@ -9,6 +9,6 @@ resources:
   - ../../cluster-components/cert-manager-issuers.yaml
   - ../../cluster-components/traefik.yaml
   - ../../cluster-components/monitoring.yaml
-#  - ../../cluster-components/llm.yaml
+  - ../../cluster-components/llm.yaml
   ## Environments for different stages
   - ./environments/dev.yaml
