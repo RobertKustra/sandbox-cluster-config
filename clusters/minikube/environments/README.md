@@ -1,5 +1,7 @@
 # Environment Flux Kustomizations
 
-This folder contains Flux Kustomization resources for each environment.
+This folder contains Flux Kustomization resources only for application environments.
 
-These manifests are meant to be applied by Flux to deploy the matching environment configuration from this repository.
+Current scope: `dev`, `test`, and `prod`.
+
+Shared cluster-level components (for example namespaces, cert-manager, traefik, monitoring, and llm) are defined in `cluster-components/` at repository root.

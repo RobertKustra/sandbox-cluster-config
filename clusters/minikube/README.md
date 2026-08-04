@@ -4,17 +4,17 @@ This folder contains the isolated Flux entrypoints for the Minikube cluster.
 
 ## Structure
 
-- environments/ - Flux Kustomization manifests per environment
+- environments/ - Flux Kustomization manifests for application environments only
 - environments/dev.yaml - Flux Kustomization for the dev environment
 - environments/test.yaml - Flux Kustomization for the test environment
 - environments/prod.yaml - Flux Kustomization for the prod environment
-- environments/monitoring.yaml - Flux Kustomization for the monitoring environment
-- environments/llm.yaml - Flux Kustomization for the llm environment
-- environments/traefik.yaml - Flux Kustomization for the Traefik ingress controller
-- environments/namespaces.yaml - Flux Kustomization for namespace bootstrap
-- environments/operators-postgres.yaml - Flux Kustomization for PostgreSQL operator resources
+- ../../cluster-components/monitoring.yaml - Flux Kustomization for the monitoring environment
+- ../../cluster-components/llm.yaml - Flux Kustomization for the llm environment
+- ../../cluster-components/traefik.yaml - Flux Kustomization for the Traefik ingress controller
+- ../../cluster-components/namespaces.yaml - Flux Kustomization for namespace bootstrap
+- ../../cluster-components/operators-postgres.yaml - Flux Kustomization for PostgreSQL operator resources
 
-Each environment is isolated so changes in one environment do not affect the others directly.
+Environments are isolated so changes in one environment do not affect the others directly.
 
 ## PostgreSQL environments
 
