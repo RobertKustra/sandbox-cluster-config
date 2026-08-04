@@ -111,6 +111,7 @@ flux bootstrap github \
   --repository=sandbox-cluster-config \
   --branch=development \
   --path=./clusters/minikube \
+  --components-extra=image-reflector-controller,image-automation-controller \
   --personal \
   --ssh-key-algorithm=rsa \
   --ssh-hostname=github.com
@@ -121,6 +122,25 @@ flux bootstrap github \
 ```bash
 kubectl get pods -n flux-system
 kubectl get kustomizations -A
+```
+
+### 4.1 Post-bootstrap quick checklist
+
+Use this checklist right after bootstrap to catch missing Flux components (for example `ImagePolicy` CRD errors) early.
+
+```bash
+# 1) Confirm Flux controllers are running, including image automation components
+kubectl get deploy -n flux-system
+
+# 2) Confirm image toolkit CRDs exist
+kubectl get crd | rg 'image.toolkit.fluxcd.io'
+
+# 3) Confirm the flux-system Kustomization is Ready
+flux get kustomizations -n flux-system
+flux describe kustomization flux-system -n flux-system
+
+# 4) Force one reconcile if bootstrap just finished
+flux reconcile kustomization flux-system -n flux-system --with-source
 ```
 
 ### 5. Optional: check the deployed resources
