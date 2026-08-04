@@ -18,6 +18,8 @@ Flux GitOps configuration for the Sandbox cluster.
 - cluster-components/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
+- templates/scaffold/ - dedicated templates used to scaffold new environments
+- scripts/manage-env-values.py - sync and scaffold utility for Minikube environments
 
 Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
 
@@ -28,6 +30,29 @@ Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoi
 3. The `sandbox-env-values-<env>` stages generate ConfigMaps and create the matching environment namespaces (`dev`, `test`, `prod`).
 4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads after the matching `sandbox-env-values-<env>` dependency succeeds and wait for HelmRelease health checks.
 5. The cluster entrypoint references only the environments and shared components that should exist on that cluster.
+
+## Environment scaffold and sync
+
+`clusters/minikube/kustomization.yaml` is the source of truth for enabled Minikube environments.
+
+Generate Flux `sandbox-env-values-<env>` manifests from currently enabled entries:
+
+```bash
+./scripts/manage-env-values.py sync
+```
+
+Scaffold a new environment from dedicated templates:
+
+```bash
+./scripts/manage-env-values.py scaffold <env>
+```
+
+Template sources:
+
+- `templates/scaffold/env-values-overlay/` for `sandbox-env-values/overlays/<env>`
+- `templates/scaffold/minikube-environment.yaml` for `clusters/minikube/environments/<env>.yaml`
+
+The scaffold command adds a commented environment line to `clusters/minikube/kustomization.yaml`. Uncomment it when you want the environment to be reconciled on the cluster.
 
 ## LLM deployment
 
