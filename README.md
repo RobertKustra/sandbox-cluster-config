@@ -15,9 +15,9 @@ Flux GitOps configuration for the Sandbox cluster.
 - namespaces/dev/, namespaces/test/, namespaces/prod/, namespaces/llm/ - namespace packages included by the matching environment or component stack
 - namespaces/monitoring/ - monitoring namespace package included by the monitoring stack
 - apps/sandbox-ai-consumer/base/, apps/sandbox-nginx/base/, apps/sandbox-redis/base/ - per-application base packages
-- apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays composing per-application packages
-- apps/llm/ - sandbox-vllm application package (HelmRelease + ingress)
-- apps/monitoring/ - monitoring stack package for the whole cluster
+- apps/sandbox-ai-consumer/overlays/<env>/, apps/sandbox-nginx/overlays/<env>/, apps/sandbox-redis/overlays/<env>/ - per-application overlays by environment
+- cluster-components/llm/ - LLM stack package (HelmRelease + ingress)
+- cluster-components/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
 
@@ -35,7 +35,7 @@ Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoi
 
 The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
 
-- HelmRelease: `apps/llm/sandbox-vllm.yaml`
+- HelmRelease: `cluster-components/llm/sandbox-vllm.yaml`
 - Ingress host: `sandbox-vllm.llm.local`
 - Smoke test: Helm hook Job executed after install and upgrade
 

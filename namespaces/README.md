@@ -8,6 +8,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./namespace.yaml
-  - ../../../../apps/overlays/dev
+  - ../../../../apps/sandbox-nginx/overlays/dev
+  - ../../../../apps/sandbox-redis/overlays/dev
   - ../../../../postgres/overlays/dev
 ```

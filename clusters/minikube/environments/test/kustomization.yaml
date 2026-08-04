@@ -2,5 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../../../namespaces/test
-  - ../../../../apps/overlays/test
+  - ../../../../apps/sandbox-ai-consumer/overlays/test
+  - ../../../../apps/sandbox-nginx/overlays/test
+  - ../../../../apps/sandbox-redis/overlays/test
   - ../../../../postgres/overlays/test
