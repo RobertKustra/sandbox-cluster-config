@@ -57,10 +57,12 @@ The scaffold command will:
 The YAML-driven scaffold command additionally:
 
 - derives `clusters/minikube/environments/<env>/kustomization.yaml` from the declared service list
+- stores `ImageRepository` and `ImagePolicy` in `clusters/minikube/environments/<env>/image-reflector.yaml`
 - derives Flux `healthChecks` from the selected Helm-based services only
 - writes image tags from the service entries into the environment values overlays
 - lets `sandbox-ai-consumer` choose `ghcr.io/robertkustra/<prefix>/sandbox-ai-consumer` through `image_repository_prefix`
 - enables image automation only for environments that explicitly set `image_updater: true`
+- keeps `ImageUpdateAutomation` resources in `clusters/minikube/flux-system/image-automation.yaml`
 - omits `ImageRepository` and `ImagePolicy` objects for services that are not installed in a given environment
 
 To activate the new environment on Minikube, uncomment the generated line in `clusters/minikube/kustomization.yaml` and run `./scripts/scaffold_envs/manage-env-values.py sync`.

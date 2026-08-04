@@ -526,12 +526,15 @@ def write_template_if_missing(template_file: Path, target_file: Path, env: str) 
     return True
 
 
-def render_environment_workload_kustomization(environment: EnvironmentConfig) -> str:
+def render_environment_workload_kustomization(environment: EnvironmentConfig, include_image_reflector: bool) -> str:
     lines = [
         "apiVersion: kustomize.config.k8s.io/v1beta1",
         "kind: Kustomization",
         "resources:",
     ]
+
+    if include_image_reflector:
+        lines.append("  - ./image-reflector.yaml")
 
     for service in environment.services:
         definition = SERVICE_DEFINITIONS[service.name]
@@ -665,7 +668,7 @@ def render_service_image_block(service: ServiceConfig, environment: EnvironmentC
     if service.tag is not None:
         tag_line = f'  tag: "{service.tag}"'
         if environment.image_updater and repository is not None:
-            tag_line += f' # {{"$imagepolicy": "flux-system:{service.name}-{environment.name}:tag"}}'
+            tag_line += f' # {{"$imagepolicy": "{environment.name}:{service.name}-{environment.name}:tag"}}'
         lines.append(tag_line)
     return lines
 
@@ -716,7 +719,7 @@ def sync_service_values_file(overlay_dir: Path, service: ServiceConfig, environm
     target_file.write_text(updated, encoding="utf-8")
 
 
-def render_image_automation(environment: EnvironmentConfig) -> list[str]:
+def render_image_reflector_resources(environment: EnvironmentConfig) -> list[str]:
     resources: list[str] = []
     image_services = [
         (service, SERVICE_DEFINITIONS[service.name])
@@ -735,7 +738,7 @@ def render_image_automation(environment: EnvironmentConfig) -> list[str]:
                     "kind: ImageRepository",
                     "metadata:",
                     f"  name: {service_config.name}-{environment.name}",
-                    "  namespace: flux-system",
+                    f"  namespace: {environment.name}",
                     "spec:",
                     "  interval: 1m",
                     f"  image: {resolve_image_repository(service_config, environment.name)}",
@@ -751,7 +754,7 @@ def render_image_automation(environment: EnvironmentConfig) -> list[str]:
                     "kind: ImagePolicy",
                     "metadata:",
                     f"  name: {service_config.name}-{environment.name}",
-                    "  namespace: flux-system",
+                    f"  namespace: {environment.name}",
                     "spec:",
                     "  imageRepositoryRef:",
                     f"    name: {service_config.name}-{environment.name}",
@@ -762,51 +765,62 @@ def render_image_automation(environment: EnvironmentConfig) -> list[str]:
             )
         )
 
-    resources.append(
-        "\n".join(
-            [
-                "apiVersion: image.toolkit.fluxcd.io/v1beta2",
-                "kind: ImageUpdateAutomation",
-                "metadata:",
-                f"  name: sandbox-env-values-{environment.name}",
-                "  namespace: flux-system",
-                "spec:",
-                "  interval: 1m",
-                "  sourceRef:",
-                "    kind: GitRepository",
-                "    name: sandbox-env-values",
-                "  git:",
-                "    checkout:",
-                "      ref:",
-                "        branch: development",
-                "    commit:",
-                "      author:",
-                "        email: fluxcdbot@users.noreply.github.com",
-                "        name: fluxcdbot",
-                "      messageTemplate: |",
-                "        chore: update sandbox image tags",
-                "",
-                "        Automation: {{ .AutomationObject }}",
-                "        Changed files:",
-                "        {{- range $file, $_ := .Changed.FileChanges }}",
-                "        - {{ $file }}",
-                "        {{- end }}",
-                "    push:",
-                "      branch: development",
-                "  update:",
-                f"    path: ./overlays/{environment.name}",
-                "    strategy: Setters",
-            ]
-        )
-    )
-
     return resources
+
+
+def render_image_update_automation(environment: EnvironmentConfig) -> str | None:
+    image_services = [
+        service
+        for service in environment.services
+        if SERVICE_DEFINITIONS[service.name].image_repository
+    ]
+
+    if not environment.image_updater or not image_services:
+        return None
+
+    return "\n".join(
+        [
+            "apiVersion: image.toolkit.fluxcd.io/v1beta2",
+            "kind: ImageUpdateAutomation",
+            "metadata:",
+            f"  name: sandbox-env-values-{environment.name}",
+            "  namespace: flux-system",
+            "spec:",
+            "  interval: 1m",
+            "  sourceRef:",
+            "    kind: GitRepository",
+            "    name: sandbox-env-values",
+            "  git:",
+            "    checkout:",
+            "      ref:",
+            "        branch: development",
+            "    commit:",
+            "      author:",
+            "        email: fluxcdbot@users.noreply.github.com",
+            "        name: fluxcdbot",
+            "      messageTemplate: |",
+            "        chore: update sandbox image tags",
+            "",
+            "        Automation: {{ .AutomationObject }}",
+            "        Changed files:",
+            "        {{- range $file, $_ := .Changed.FileChanges }}",
+            "        - {{ $file }}",
+            "        {{- end }}",
+            "    push:",
+            "      branch: development",
+            "  update:",
+            f"    path: ./overlays/{environment.name}",
+            "    strategy: Setters",
+        ]
+    )
 
 
 def render_image_automation_file(environments: list[EnvironmentConfig]) -> str:
     resources: list[str] = []
     for environment in environments:
-        resources.extend(render_image_automation(environment))
+        automation = render_image_update_automation(environment)
+        if automation:
+            resources.append(automation)
     return "\n---\n".join(resources) + ("\n" if resources else "")
 
 
@@ -880,8 +894,20 @@ def apply_scaffold_config(
         env_dir = cluster_dir / "environments" / environment.name
         env_manifest_file = cluster_dir / "environments" / f"{environment.name}.yaml"
         overlay_dir = env_values_repo_root / "overlays" / environment.name
+        image_reflector_file = env_dir / "image-reflector.yaml"
 
-        write_text_file(env_dir / "kustomization.yaml", render_environment_workload_kustomization(environment))
+        image_reflector_resources = render_image_reflector_resources(environment)
+        has_image_reflector = bool(image_reflector_resources)
+
+        if has_image_reflector:
+            write_text_file(image_reflector_file, "\n---\n".join(image_reflector_resources) + "\n")
+        elif image_reflector_file.exists():
+            image_reflector_file.unlink()
+
+        write_text_file(
+            env_dir / "kustomization.yaml",
+            render_environment_workload_kustomization(environment, has_image_reflector),
+        )
         write_text_file(env_manifest_file, render_environment_flux_kustomization(config.cluster, environment))
 
         overlay_dir.mkdir(parents=True, exist_ok=True)
