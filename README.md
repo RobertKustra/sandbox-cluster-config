@@ -5,6 +5,8 @@ Flux GitOps configuration for the Sandbox cluster.
 ## Structure
 
 - clusters/minikube/ - cluster-specific entrypoint for the Minikube cluster
+- clusters/minikube/flux-system/ - active Flux manifests used by the Minikube cluster
+- bootstrap/flux-system-template/ - optional bootstrap/template Flux manifests kept for reference
 - clusters/minikube/environments/dev/ - isolated configuration for the dev environment
 - clusters/minikube/environments/test/ - isolated configuration for the test environment
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
@@ -20,6 +22,8 @@ Flux GitOps configuration for the Sandbox cluster.
 - apps/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
+
+Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
 
 ## Flow
 
