@@ -13,7 +13,7 @@ This folder contains the isolated Flux entrypoints for the Minikube cluster.
 - ../../cluster-components/traefik.yaml - Flux Kustomization for the Traefik ingress controller
 - ../../cluster-components/operators-postgres.yaml - Flux Kustomization for PostgreSQL operator resources
 
-Environments are isolated so changes in one environment do not affect the others directly. Each enabled environment or cluster component also owns the namespace manifest it needs.
+Environments are isolated so changes in one environment do not affect the others directly. The `sandbox-env-values-<env>` stages create the `dev`, `test`, and `prod` namespaces before the matching workload Kustomizations reconcile, while shared cluster components still own their namespace manifests locally.
 
 ## PostgreSQL environments
 

@@ -12,8 +12,9 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
 - cluster-components/ - shared cluster-level components (cert-manager, traefik, monitoring, llm, and operator bootstrap)
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
-- namespaces/dev/, namespaces/test/, namespaces/prod/, namespaces/llm/ - namespace packages included by the matching environment or component stack
-- namespaces/monitoring/ - monitoring namespace package included by the monitoring stack
+- namespaces/llm/ - namespace package included by the LLM stack
+- namespaces/monitoring/ - namespace package included by the monitoring stack
+- namespaces/cert-manager/, namespaces/traefik/ - namespace packages included by the matching cluster components
 - apps/sandbox-ai-consumer/base/, apps/sandbox-nginx/base/, apps/sandbox-redis/base/ - per-application base packages
 - apps/sandbox-ai-consumer/overlays/<env>/, apps/sandbox-nginx/overlays/<env>/, apps/sandbox-redis/overlays/<env>/ - per-application overlays by environment
 - cluster-components/llm/ - LLM stack package (HelmRelease + ingress)
@@ -26,9 +27,9 @@ Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoi
 ## Flow
 
 1. Flux reads the GitRepository sources from this repository.
-2. Each enabled environment or cluster component includes its own namespace manifest when needed.
-3. The `sandbox-env-values-<env>` stages generate ConfigMaps and create the matching environment namespace.
-4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads and wait for HelmRelease health checks.
+2. Cluster components include their own namespace manifests when needed.
+3. The `sandbox-env-values-<env>` stages generate ConfigMaps and create the matching environment namespaces (`dev`, `test`, `prod`).
+4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads after the matching `sandbox-env-values-<env>` dependency succeeds and wait for HelmRelease health checks.
 5. The cluster entrypoint references only the environments and shared components that should exist on that cluster.
 
 ## LLM deployment
