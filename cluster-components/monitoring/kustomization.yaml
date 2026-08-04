@@ -8,7 +8,7 @@ configMapGenerator:
 generatorOptions:
   disableNameSuffixHash: true
 resources:
-  - ../../namespaces/monitoring
+  - ./namespace.yaml
   - ./prometheus.yaml
   - ./grafana.yaml
   - ./jaeger.yaml
