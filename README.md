@@ -41,7 +41,7 @@ The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
 
 ## GitHub + SSH access for Flux
 
-## Secrets with SOPS + age
+## [Not-Ready] Secrets with SOPS + age
 
 This repository uses Flux, so the simplest secrets workflow is to keep Kubernetes `Secret` manifests encrypted in Git with SOPS and decrypt them in-cluster with Flux.
 
