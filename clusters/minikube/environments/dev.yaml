@@ -6,7 +6,6 @@ metadata:
 spec:
   interval: 10m
   dependsOn:
-    - name: minikube-namespaces
     - name: minikube-postgres-operator
     - name: minikube-llm
     - name: minikube-monitoring

@@ -10,10 +10,10 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/dev/ - isolated configuration for the dev environment
 - clusters/minikube/environments/test/ - isolated configuration for the test environment
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
-- cluster-components/ - shared cluster-level components (namespaces, cert-manager, traefik, monitoring, llm, and operator bootstrap)
+- cluster-components/ - shared cluster-level components (cert-manager, traefik, monitoring, llm, and operator bootstrap)
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
-- namespaces/dev/, namespaces/test/, namespaces/prod/, namespaces/llm/ - simplified namespace packages per environment
-- namespaces/monitoring/ - monitoring namespace package
+- namespaces/dev/, namespaces/test/, namespaces/prod/, namespaces/llm/ - namespace packages included by the matching environment or component stack
+- namespaces/monitoring/ - monitoring namespace package included by the monitoring stack
 - apps/sandbox-ai-consumer/base/, apps/sandbox-nginx/base/, apps/sandbox-redis/base/ - per-application base packages
 - apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays composing per-application packages
 - apps/llm/ - sandbox-vllm application package (HelmRelease + ingress)
@@ -26,10 +26,10 @@ Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoi
 ## Flow
 
 1. Flux reads the GitRepository sources from this repository.
-2. The `minikube-namespaces` stage creates all target namespaces first.
-3. The `sandbox-env-values-<env>` stages generate ConfigMaps with Helm values in each environment namespace.
+2. Each enabled environment or cluster component includes its own namespace manifest when needed.
+3. The `sandbox-env-values-<env>` stages generate ConfigMaps and create the matching environment namespace.
 4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads and wait for HelmRelease health checks.
-5. The cluster entrypoint references dev, test, prod, monitoring, llm, and namespace bootstrap independently.
+5. The cluster entrypoint references only the environments and shared components that should exist on that cluster.
 
 ## LLM deployment
 
@@ -172,7 +172,6 @@ flux reconcile source git sandbox-env-values -n flux-system
 flux reconcile kustomization sandbox-cluster-config -n flux-system --with-source
 
 # Core staged kustomizations
-flux reconcile kustomization minikube-namespaces -n flux-system --with-source
 flux reconcile kustomization minikube-dev -n flux-system --with-source
 flux reconcile kustomization minikube-test -n flux-system --with-source
 flux reconcile kustomization minikube-prod -n flux-system --with-source

@@ -6,7 +6,6 @@ metadata:
 spec:
   interval: 10m
   dependsOn:
-    - name: minikube-namespaces
     - name: minikube-cert-manager-issuers
     - name: minikube-traefik
   path: ./cluster-components/monitoring

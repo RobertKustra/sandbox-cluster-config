@@ -11,10 +11,9 @@ This folder contains the isolated Flux entrypoints for the Minikube cluster.
 - ../../cluster-components/monitoring.yaml - Flux Kustomization for the monitoring environment
 - ../../cluster-components/llm.yaml - Flux Kustomization for the llm environment
 - ../../cluster-components/traefik.yaml - Flux Kustomization for the Traefik ingress controller
-- ../../cluster-components/namespaces.yaml - Flux Kustomization for namespace bootstrap
 - ../../cluster-components/operators-postgres.yaml - Flux Kustomization for PostgreSQL operator resources
 
-Environments are isolated so changes in one environment do not affect the others directly.
+Environments are isolated so changes in one environment do not affect the others directly. Each enabled environment or cluster component also owns the namespace manifest it needs.
 
 ## PostgreSQL environments
 
@@ -30,7 +29,6 @@ The manifests live under `postgres/overlays/<env>` and are included by the match
 
 ```bash
 kustomize build clusters/minikube
-flux reconcile kustomization minikube-namespaces -n flux-system --with-source
 flux reconcile kustomization minikube-dev -n flux-system --with-source
 flux reconcile kustomization minikube-test -n flux-system --with-source
 flux reconcile kustomization minikube-prod -n flux-system --with-source

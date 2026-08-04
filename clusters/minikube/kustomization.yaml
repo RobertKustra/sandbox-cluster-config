@@ -4,7 +4,6 @@ resources:
   - ../../sources
   - ./flux-system
   ## Core modules for kubernetes cluster
-  - ../../cluster-components/namespaces.yaml
   - ../../cluster-components/operators-postgres.yaml
   - ../../cluster-components/cert-manager.yaml
   - ../../cluster-components/cert-manager-issuers.yaml
