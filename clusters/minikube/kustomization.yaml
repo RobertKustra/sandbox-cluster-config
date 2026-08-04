@@ -11,4 +11,4 @@ resources:
   - ../../cluster-components/monitoring.yaml
 #  - ../../cluster-components/llm.yaml
   ## Environments for different stages
-  - ./environments/test.yaml
+  - ./environments/dev.yaml

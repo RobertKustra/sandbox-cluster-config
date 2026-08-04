@@ -15,6 +15,7 @@ ENV_NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
 CLUSTER_NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
 ENV_TOKEN = "__ENV__"
 CLUSTER_ENV_SECTION_MARKER = "  ## Environments for different stages"
+COMMAND_CHOICES = {"sync", "scaffold", "scaffold-config"}
 
 
 @dataclass(frozen=True)
@@ -82,6 +83,37 @@ SERVICE_DEFINITIONS: dict[str, ServiceDefinition] = {
 def err(message: str) -> None:
     print(f"Error: {message}", file=sys.stderr)
     raise SystemExit(1)
+
+
+def normalize_argv(argv: list[str]) -> list[str]:
+    # Allow shorthand: `python manage-env-values.py scaffold-config.yaml`
+    if len(argv) >= 2 and argv[1] not in COMMAND_CHOICES and not argv[1].startswith("-"):
+        suffix = Path(argv[1]).suffix.lower()
+        if suffix in {".yaml", ".yml"}:
+            return [argv[0], "scaffold-config", argv[1], *argv[2:]]
+    return argv
+
+
+def discover_cluster_repo_root(start_dir: Path) -> Path:
+    for candidate in [start_dir, *start_dir.parents]:
+        if (candidate / "clusters").is_dir() and (candidate / "cluster-components").is_dir():
+            return candidate
+    err(f"could not detect sandbox-cluster-config root from {start_dir}")
+
+
+def discover_template_root(script_dir: Path, cluster_repo_root: Path) -> Path:
+    local_template_root = script_dir / "templates" / "scaffold"
+    repo_template_root = cluster_repo_root / "templates" / "scaffold"
+
+    if local_template_root.is_dir():
+        return local_template_root
+    if repo_template_root.is_dir():
+        return repo_template_root
+
+    err(
+        "templates not found. Expected one of: "
+        f"{local_template_root} or {repo_template_root}"
+    )
 
 
 def validate_environment_name(name: str) -> None:
@@ -892,7 +924,7 @@ def build_parser() -> argparse.ArgumentParser:
         "command",
         nargs="?",
         default="sync",
-        choices=["sync", "scaffold", "scaffold-config"],
+        choices=sorted(COMMAND_CHOICES),
         help="sync updates env-values manifests; scaffold creates a legacy single environment; scaffold-config applies a YAML config",
     )
     parser.add_argument(
@@ -914,13 +946,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
-    args = build_parser().parse_args()
+    args = build_parser().parse_args(normalize_argv(sys.argv)[1:])
 
     script_dir = Path(__file__).resolve().parent
-    default_cluster_repo_root = script_dir.parent
+    default_cluster_repo_root = discover_cluster_repo_root(script_dir)
     cluster_repo_root = Path(args.cluster_repo_root).resolve() if args.cluster_repo_root else default_cluster_repo_root
     repos_root = cluster_repo_root.parent
-    template_root = cluster_repo_root / "templates" / "scaffold"
+    template_root = discover_template_root(script_dir, cluster_repo_root)
     env_values_overlay_template_dir = template_root / "env-values-overlay"
     minikube_environment_template_file = template_root / "minikube-environment.yaml"
 

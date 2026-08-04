@@ -32,19 +32,19 @@ The manifests live under `postgres/overlays/<env>` and are included by the match
 Use the helper script to keep Flux `sandbox-env-values-<env>` manifests in sync with enabled environment entries:
 
 ```bash
-./scripts/manage-env-values.py sync
+./scripts/scaffold_envs/manage-env-values.py sync
 ```
 
 Create a new environment scaffold from dedicated templates:
 
 ```bash
-./scripts/manage-env-values.py scaffold <env>
+./scripts/scaffold_envs/manage-env-values.py scaffold <env>
 ```
 
 Apply a YAML scaffold config when each environment should install a different subset of services:
 
 ```bash
-./scripts/manage-env-values.py scaffold-config ./templates/scaffold/cluster-config.example.yaml
+./scripts/scaffold_envs/manage-env-values.py scaffold-config ./scripts/scaffold_envs/templates/scaffold/cluster-config.example.yaml
 ```
 
 The scaffold command will:
@@ -63,7 +63,7 @@ The YAML-driven scaffold command additionally:
 - enables image automation only for environments that explicitly set `image_updater: true`
 - omits `ImageRepository` and `ImagePolicy` objects for services that are not installed in a given environment
 
-To activate the new environment on Minikube, uncomment the generated line in `clusters/minikube/kustomization.yaml` and run `./scripts/manage-env-values.py sync`.
+To activate the new environment on Minikube, uncomment the generated line in `clusters/minikube/kustomization.yaml` and run `./scripts/scaffold_envs/manage-env-values.py sync`.
 
 ### Useful commands
 

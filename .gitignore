@@ -1,0 +1,9 @@
+# Python temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

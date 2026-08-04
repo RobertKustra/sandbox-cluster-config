@@ -18,8 +18,8 @@ Flux GitOps configuration for the Sandbox cluster.
 - cluster-components/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
-- templates/scaffold/ - dedicated templates used to scaffold new environments
-- scripts/manage-env-values.py - sync and scaffold utility for Minikube environments
+- scripts/scaffold_envs/templates/scaffold/ - dedicated templates used to scaffold environments
+- scripts/scaffold_envs/manage-env-values.py - sync and scaffold utility for Minikube environments
 
 Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
 
@@ -38,26 +38,26 @@ Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoi
 Generate Flux `sandbox-env-values-<env>` manifests from currently enabled entries:
 
 ```bash
-./scripts/manage-env-values.py sync
+./scripts/scaffold_envs/manage-env-values.py sync
 ```
 
 Scaffold a new environment from dedicated templates:
 
 ```bash
-./scripts/manage-env-values.py scaffold <env>
+./scripts/scaffold_envs/manage-env-values.py scaffold <env>
 ```
 
 Apply a YAML scaffold config that declares the cluster, environments, enabled services, service tags, and per-environment image updater:
 
 ```bash
-./scripts/manage-env-values.py scaffold-config ./templates/scaffold/cluster-config.example.yaml
+./scripts/scaffold_envs/manage-env-values.py scaffold-config ./scripts/scaffold_envs/templates/scaffold/cluster-config.example.yaml
 ```
 
 Template sources:
 
-- `templates/scaffold/env-values-overlay/` for `sandbox-env-values/overlays/<env>`
-- `templates/scaffold/minikube-environment.yaml` for `clusters/minikube/environments/<env>.yaml`
-- `templates/scaffold/cluster-config.example.yaml` for the YAML input schema
+- `scripts/scaffold_envs/templates/scaffold/env-values-overlay/` for `sandbox-env-values/overlays/<env>`
+- `scripts/scaffold_envs/templates/scaffold/minikube-environment.yaml` for `clusters/minikube/environments/<env>.yaml`
+- `scripts/scaffold_envs/templates/scaffold/cluster-config.example.yaml` for the YAML input schema
 
 Example scaffold config:
 
