@@ -66,7 +66,7 @@ Apply a YAML scaffold config that declares the cluster, shared components, envir
 
 ```bash
 cd ../sandbox-scaffolder
-make run CONFIG_FILE=/workspace/sandbox-scaffolder/cluster-config.yaml HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
+make run CONFIG_FILE=/workspace/sandbox-scaffolder/cluster-config.yaml HOST_REPOS_ROOT=<place-of-your-repos>
 ```
 
 Template files and `cluster-config.yaml` input schema now live in `sandbox-scaffolder`.
