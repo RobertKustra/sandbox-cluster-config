@@ -5,7 +5,7 @@ metadata:
   namespace: dev
 spec:
   interval: 1m
-  image: ghcr.io/robertkustra/prod/sandbox-ai-consumer
+  image: ghcr.io/robertkustra/dev/sandbox-ai-consumer
   secretRef:
     name: ghcr-pull-secret
 ---
