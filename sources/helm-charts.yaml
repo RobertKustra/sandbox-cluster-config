@@ -22,7 +22,7 @@ spec:
   ref:
     branch: development
   secretRef:
-    name: flux-system
+    name: sandbox-env-values-write
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository

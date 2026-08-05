@@ -735,7 +735,7 @@ def render_service_image_block(service: ServiceConfig, environment: EnvironmentC
     if service.tag is not None:
         tag_line = f'  tag: "{service.tag}"'
         if environment.image_updater and repository is not None:
-            tag_line += f' # {{"$imagepolicy": "{environment.name}:{service.name}-{environment.name}:tag"}}'
+            tag_line += f' # {{"$imagepolicy": "flux-system:{service.name}-{environment.name}:tag"}}'
         lines.append(tag_line)
     return lines
 
@@ -805,7 +805,7 @@ def render_image_reflector_resources(environment: EnvironmentConfig) -> list[str
                     "kind: ImageRepository",
                     "metadata:",
                     f"  name: {service_config.name}-{environment.name}",
-                    f"  namespace: {environment.name}",
+                    "  namespace: flux-system",
                     "spec:",
                     "  interval: 1m",
                     f"  image: {resolve_image_repository(service_config, environment.name)}",
@@ -821,7 +821,7 @@ def render_image_reflector_resources(environment: EnvironmentConfig) -> list[str
                     "kind: ImagePolicy",
                     "metadata:",
                     f"  name: {service_config.name}-{environment.name}",
-                    f"  namespace: {environment.name}",
+                    "  namespace: flux-system",
                     "spec:",
                     "  imageRepositoryRef:",
                     f"    name: {service_config.name}-{environment.name}",
