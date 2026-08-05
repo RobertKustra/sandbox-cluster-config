@@ -27,6 +27,8 @@ The manifests live under `postgres/overlays/<env>` and are included by the match
 
 ## Environment scaffold workflow
 
+Migration note: scaffold tooling was moved to the external `sandbox-scaffolder` repository. For migration context and the minimal command flow, see `../README.md` section `Migration to sandbox-scaffolder`.
+
 `clusters/minikube/kustomization.yaml` is the source of truth for which environments are active on this cluster.
 
 Use the helper script to keep Flux `sandbox-env-values-<env>` manifests in sync with enabled environment entries:

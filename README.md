@@ -22,6 +22,25 @@ Flux GitOps configuration for the Sandbox cluster.
 
 Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
 
+## Migration to sandbox-scaffolder
+
+Environment scaffold tooling was moved out of this repository to the external `sandbox-scaffolder` repo.
+
+Current source of truth:
+
+- scaffold code, templates, and tests: `sandbox-scaffolder`
+- cluster manifests and overlays: `sandbox-cluster-config` and `sandbox-env-values`
+
+Minimal workflow:
+
+```bash
+cd ../sandbox-scaffolder
+make run HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
+make run-sync HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
+```
+
+If you previously used local paths under `scripts/scaffold_envs`, replace them with `sandbox-scaffolder` Make targets.
+
 ## Flow
 
 1. Flux reads the GitRepository sources from this repository.
