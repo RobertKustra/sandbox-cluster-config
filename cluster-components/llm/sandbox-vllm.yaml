@@ -37,11 +37,11 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "256"
+        - "128"
         - --max-num-seqs
         - "1"
         - --gpu-memory-utilization
-        - "0.30"
+        - "0.25"
         - --enforce-eager
         - --served-model-name
         - ziutek_2.0
@@ -80,7 +80,7 @@ spec:
         memory: 384Mi
       limits:
         cpu: "1"
-        memory: 3Gi
+        memory: 4Gi
         nvidia.com/gpu: 1
 
     persistence:
