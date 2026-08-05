@@ -10,32 +10,124 @@ Flux GitOps configuration for the Sandbox cluster.
 - clusters/minikube/environments/dev/ - isolated configuration for the dev environment
 - clusters/minikube/environments/test/ - isolated configuration for the test environment
 - clusters/minikube/environments/prod/ - isolated configuration for the prod environment
-- cluster-components/ - shared cluster-level components (namespaces, cert-manager, traefik, monitoring, llm, and operator bootstrap)
+- cluster-components/ - shared cluster-level components (cert-manager, traefik, monitoring, llm, and operator bootstrap)
 - sources/ - GitRepository definitions for the Helm charts and environment values repositories
-- namespaces/dev/, namespaces/test/, namespaces/prod/, namespaces/llm/ - simplified namespace packages per environment
-- namespaces/monitoring/ - monitoring namespace package
 - apps/sandbox-ai-consumer/base/, apps/sandbox-nginx/base/, apps/sandbox-redis/base/ - per-application base packages
-- apps/overlays/dev/, apps/overlays/test/, apps/overlays/prod/ - environment overlays composing per-application packages
-- apps/llm/ - sandbox-vllm application package (HelmRelease + ingress)
-- apps/monitoring/ - monitoring stack package for the whole cluster
+- apps/sandbox-ai-consumer/overlays/<env>/, apps/sandbox-nginx/overlays/<env>/, apps/sandbox-redis/overlays/<env>/ - per-application overlays by environment
+- cluster-components/llm/ - LLM stack package (HelmRelease + ingress)
+- cluster-components/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
+- separate repo `sandbox-scaffolder` - dedicated scaffold tooling for environment generation and sync
 
 Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
+
+## Migration to sandbox-scaffolder
+
+Environment scaffold tooling was moved out of this repository to the separate `sandbox-scaffolder` repo.
+
+Current source of truth:
+
+- scaffold code, templates, and tests: `sandbox-scaffolder`
+- cluster manifests and overlays: `sandbox-cluster-config` and `sandbox-env-values`
+
+Minimal workflow:
+
+```bash
+cd ../sandbox-scaffolder
+make run HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
+make run-sync HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
+```
+
+If you previously used local paths under `scripts/scaffold_envs`, replace them with `sandbox-scaffolder` Make targets.
 
 ## Flow
 
 1. Flux reads the GitRepository sources from this repository.
-2. The `minikube-namespaces` stage creates all target namespaces first.
-3. The `sandbox-env-values-<env>` stages generate ConfigMaps with Helm values in each environment namespace.
-4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads and wait for HelmRelease health checks.
-5. The cluster entrypoint references dev, test, prod, monitoring, llm, and namespace bootstrap independently.
+2. Cluster components include their own namespace manifests in their local component directories when needed.
+3. The `sandbox-env-values-<env>` stages generate ConfigMaps and create the matching environment namespaces (`dev`, `test`, `prod`).
+4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads after the matching `sandbox-env-values-<env>` dependency succeeds and wait for HelmRelease health checks.
+5. The cluster entrypoint references only the environments and shared components that should exist on that cluster.
+
+## Environment scaffold and sync
+
+`clusters/minikube/kustomization.yaml` is the source of truth for enabled Minikube environments.
+
+Scaffold operations are managed in the separate `sandbox-scaffolder` repository (Docker + Make workflow).
+
+Regenerate Flux `sandbox-env-values-<env>` manifests from currently enabled entries:
+
+```bash
+cd ../sandbox-scaffolder
+make run-sync HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
+```
+
+Apply a YAML scaffold config that declares the cluster, shared components, environments, enabled services, service tags, and per-environment image updater:
+
+```bash
+cd ../sandbox-scaffolder
+make run CONFIG_FILE=/workspace/sandbox-scaffolder/cluster-config.yaml HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
+```
+
+Template files and `cluster-config.yaml` input schema now live in `sandbox-scaffolder`.
+
+Example scaffold config:
+
+```yaml
+cluster: minikube
+components:
+  - llm
+environments:
+  - name: dev
+    services:
+      - name: sandbox-nginx
+        tag: "1.25"
+      - name: sandbox-redis
+        tag: "7.2.5"
+      - name: postgres
+    image_updater: false
+  - name: prod
+    services:
+      - name: sandbox-nginx
+        tag: "1.25"
+      - name: sandbox-redis
+        tag: "7.2.5"
+      - name: sandbox-ai-consumer
+        tag: "0.2.2"
+        image_repository_prefix: prod
+      - name: postgres
+    image_updater: true
+```
+
+Service entry fields:
+
+- `name`: service identifier used by the scaffold
+- `tag`: image tag to write into the generated env values file
+- `image_repository_prefix`: optional image path selector for services that support multiple registries or paths; for `sandbox-ai-consumer` this maps to `ghcr.io/robertkustra/<prefix>/sandbox-ai-consumer` and defaults to the environment name
+
+Special service behavior:
+
+- `components` is a top-level list of cluster-scoped installs managed by the scaffold. Today it supports `llm`, which toggles the `../../cluster-components/llm.yaml` entry in `clusters/<cluster>/kustomization.yaml`.
+- `llm` can still be declared in the service list for backward compatibility. It only adds a `dependsOn` entry on `<cluster>-llm` and does not add a per-environment workload or env-values file.
+- `sandbox-ai-consumer` always adds the same `<cluster>-llm` dependency because it requires the shared vLLM stack.
+
+The YAML-driven scaffold command will:
+
+- update `clusters/<cluster>/environments/<env>/kustomization.yaml` from the declared service list
+- update `clusters/<cluster>/environments/<env>.yaml` with health checks only for selected Helm-based services
+- update `sandbox-env-values/overlays/<env>/kustomization.yaml` and `namespace.yaml`
+- create missing per-service values files in `sandbox-env-values/overlays/<env>/` and update managed `image` blocks from the declared service tags
+- regenerate `clusters/<cluster>/flux-system/env-values-kustomizations.yaml`
+- regenerate `clusters/<cluster>/flux-system/image-automation.yaml` only for environments that enable `image_updater` and only for services that support image automation; `sandbox-ai-consumer` uses the configured `image_repository_prefix`
+- add or remove the `image-automation.yaml` reference in `clusters/<cluster>/flux-system/kustomization.yaml`
+
+The scaffold workflow adds environment entries in `clusters/minikube/kustomization.yaml` based on the provided `cluster-config.yaml`.
 
 ## LLM deployment
 
 The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
 
-- HelmRelease: `apps/llm/sandbox-vllm.yaml`
+- HelmRelease: `cluster-components/llm/sandbox-vllm.yaml`
 - Ingress host: `sandbox-vllm.llm.local`
 - Smoke test: Helm hook Job executed after install and upgrade
 
@@ -172,7 +264,6 @@ flux reconcile source git sandbox-env-values -n flux-system
 flux reconcile kustomization sandbox-cluster-config -n flux-system --with-source
 
 # Core staged kustomizations
-flux reconcile kustomization minikube-namespaces -n flux-system --with-source
 flux reconcile kustomization minikube-dev -n flux-system --with-source
 flux reconcile kustomization minikube-test -n flux-system --with-source
 flux reconcile kustomization minikube-prod -n flux-system --with-source

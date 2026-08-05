@@ -4,14 +4,11 @@ resources:
   - ../../sources
   - ./flux-system
   ## Core modules for kubernetes cluster
-  - ../../cluster-components/namespaces.yaml
   - ../../cluster-components/operators-postgres.yaml
   - ../../cluster-components/cert-manager.yaml
   - ../../cluster-components/cert-manager-issuers.yaml
   - ../../cluster-components/traefik.yaml
   - ../../cluster-components/monitoring.yaml
-#  - ../../cluster-components/llm.yaml
+  - ../../cluster-components/llm.yaml
   ## Environments for different stages
   - ./environments/dev.yaml
-#  - ./environments/test.yaml
-#  - ./environments/prod.yaml

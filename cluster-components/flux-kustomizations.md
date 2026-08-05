@@ -14,6 +14,5 @@ Shared cluster components live in `cluster-components`:
 - llm.yaml for the llm environment
 - traefik.yaml for the Traefik ingress controller
 - operators-postgres.yaml for PostgreSQL operator resources
-- namespaces.yaml for namespace bootstrap
 
 These manifests can be applied directly by Flux and are referenced by `clusters/minikube/kustomization.yaml`.

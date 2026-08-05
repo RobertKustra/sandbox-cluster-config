@@ -6,9 +6,7 @@ metadata:
 spec:
   interval: 10m
   dependsOn:
-    - name: minikube-namespaces
     - name: minikube-postgres-operator
-    - name: minikube-llm
     - name: minikube-monitoring
     - name: sandbox-env-values-test
   path: ./clusters/minikube/environments/test
@@ -22,10 +20,6 @@ spec:
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease
       name: sandbox-redis
-      namespace: test
-    - apiVersion: helm.toolkit.fluxcd.io/v2
-      kind: HelmRelease
-      name: sandbox-ai-consumer
       namespace: test
   timeout: 5m0s
   sourceRef:

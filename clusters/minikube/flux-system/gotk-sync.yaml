@@ -8,7 +8,7 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: development
+    branch: fix/path-kustomization
   secretRef:
     name: flux-system
   url: ssh://git@github.com/RobertKustra/sandbox-cluster-config
