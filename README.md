@@ -18,13 +18,13 @@ Flux GitOps configuration for the Sandbox cluster.
 - cluster-components/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
-- external repo `sandbox-scaffolder` - dedicated scaffold tooling for environment generation and sync
+- separate repo `sandbox-scaffolder` - dedicated scaffold tooling for environment generation and sync
 
 Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
 
 ## Migration to sandbox-scaffolder
 
-Environment scaffold tooling was moved out of this repository to the external `sandbox-scaffolder` repo.
+Environment scaffold tooling was moved out of this repository to the separate `sandbox-scaffolder` repo.
 
 Current source of truth:
 
@@ -53,7 +53,7 @@ If you previously used local paths under `scripts/scaffold_envs`, replace them w
 
 `clusters/minikube/kustomization.yaml` is the source of truth for enabled Minikube environments.
 
-Scaffold operations are managed in the external `sandbox-scaffolder` repository (Docker + Make workflow).
+Scaffold operations are managed in the separate `sandbox-scaffolder` repository (Docker + Make workflow).
 
 Regenerate Flux `sandbox-env-values-<env>` manifests from currently enabled entries:
 
