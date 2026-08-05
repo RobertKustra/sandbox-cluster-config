@@ -32,19 +32,15 @@ The manifests live under `postgres/overlays/<env>` and are included by the match
 Use the helper script to keep Flux `sandbox-env-values-<env>` manifests in sync with enabled environment entries:
 
 ```bash
-./scripts/scaffold_envs/manage-env-values.py sync
-```
-
-Create a new environment scaffold from dedicated templates:
-
-```bash
-./scripts/scaffold_envs/manage-env-values.py scaffold <env>
+cd ../sandbox-scaffolder
+make run-sync HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
 ```
 
 Apply a YAML scaffold config when each environment should install a different subset of services:
 
 ```bash
-./scripts/scaffold_envs/manage-env-values.py scaffold-config ./scripts/scaffold_envs/templates/scaffold/cluster-config.example.yaml
+cd ../sandbox-scaffolder
+make run CONFIG_FILE=/workspace/sandbox-scaffolder/cluster-config.yaml HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
 ```
 
 The scaffold command will:
@@ -58,7 +54,7 @@ The YAML-driven scaffold command additionally:
 
 - installs or removes managed cluster components declared in the top-level `components` list
 - derives `clusters/minikube/environments/<env>/kustomization.yaml` from the declared service list
-- stores `ImageRepository` and `ImagePolicy` in `clusters/minikube/environments/<env>/image-reflector.yaml`
+- stores `ImageRepository` and `ImagePolicy` manifests in `clusters/minikube/environments/<env>/image-reflector.yaml` with resources in namespace `flux-system`
 - derives Flux `healthChecks` from the selected Helm-based services only
 - writes image tags from the service entries into the environment values overlays
 - lets `sandbox-ai-consumer` choose `ghcr.io/robertkustra/<prefix>/sandbox-ai-consumer` through `image_repository_prefix`
@@ -68,7 +64,7 @@ The YAML-driven scaffold command additionally:
 - keeps `ImageUpdateAutomation` resources in `clusters/minikube/flux-system/image-automation.yaml`
 - omits `ImageRepository` and `ImagePolicy` objects for services that are not installed in a given environment
 
-To activate the new environment on Minikube, uncomment the generated line in `clusters/minikube/kustomization.yaml` and run `./scripts/scaffold_envs/manage-env-values.py sync`.
+To activate the new environment on Minikube, run `make run-sync` from `sandbox-scaffolder` after updating `cluster-config.yaml`.
 
 ### Useful commands
 

@@ -18,8 +18,7 @@ Flux GitOps configuration for the Sandbox cluster.
 - cluster-components/monitoring/ - monitoring stack package for the whole cluster
 - postgres/base/ - shared Crunchy PGO PostgresCluster manifest
 - postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
-- scripts/scaffold_envs/templates/scaffold/ - dedicated templates used to scaffold environments
-- scripts/scaffold_envs/manage-env-values.py - sync and scaffold utility for Minikube environments
+- external repo `sandbox-scaffolder` - dedicated scaffold tooling for environment generation and sync
 
 Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
 
@@ -35,29 +34,23 @@ Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoi
 
 `clusters/minikube/kustomization.yaml` is the source of truth for enabled Minikube environments.
 
-Generate Flux `sandbox-env-values-<env>` manifests from currently enabled entries:
+Scaffold operations are managed in the external `sandbox-scaffolder` repository (Docker + Make workflow).
+
+Regenerate Flux `sandbox-env-values-<env>` manifests from currently enabled entries:
 
 ```bash
-./scripts/scaffold_envs/manage-env-values.py sync
-```
-
-Scaffold a new environment from dedicated templates:
-
-```bash
-./scripts/scaffold_envs/manage-env-values.py scaffold <env>
+cd ../sandbox-scaffolder
+make run-sync HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
 ```
 
 Apply a YAML scaffold config that declares the cluster, shared components, environments, enabled services, service tags, and per-environment image updater:
 
 ```bash
-./scripts/scaffold_envs/manage-env-values.py scaffold-config ./scripts/scaffold_envs/templates/scaffold/cluster-config.example.yaml
+cd ../sandbox-scaffolder
+make run CONFIG_FILE=/workspace/sandbox-scaffolder/cluster-config.yaml HOST_REPOS_ROOT=/home/ziutek/sandbox/Repos
 ```
 
-Template sources:
-
-- `scripts/scaffold_envs/templates/scaffold/env-values-overlay/` for `sandbox-env-values/overlays/<env>`
-- `scripts/scaffold_envs/templates/scaffold/minikube-environment.yaml` for `clusters/minikube/environments/<env>.yaml`
-- `scripts/scaffold_envs/templates/scaffold/cluster-config.example.yaml` for the YAML input schema
+Template files and `cluster-config.yaml` input schema now live in `sandbox-scaffolder`.
 
 Example scaffold config:
 
@@ -109,7 +102,7 @@ The YAML-driven scaffold command will:
 - regenerate `clusters/<cluster>/flux-system/image-automation.yaml` only for environments that enable `image_updater` and only for services that support image automation; `sandbox-ai-consumer` uses the configured `image_repository_prefix`
 - add or remove the `image-automation.yaml` reference in `clusters/<cluster>/flux-system/kustomization.yaml`
 
-The scaffold command adds a commented environment line to `clusters/minikube/kustomization.yaml`. Uncomment it when you want the environment to be reconciled on the cluster.
+The scaffold workflow adds environment entries in `clusters/minikube/kustomization.yaml` based on the provided `cluster-config.yaml`.
 
 ## LLM deployment
 
