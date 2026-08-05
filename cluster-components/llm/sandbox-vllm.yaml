@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: charts/sandbox-vllm
-      version: "0.1.2"
+      version: "0.1.3"
       sourceRef:
         kind: GitRepository
         name: sandbox-helm-charts
@@ -37,11 +37,12 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "1024"
+        - "512"
         - --max-num-seqs
         - "1"
         - --gpu-memory-utilization
-        - "0.45"
+        - "0.35"
+        - --enforce-eager
         - --served-model-name
         - ziutek_2.0
 
@@ -75,11 +76,11 @@ spec:
 
     resources:
       requests:
-        cpu: "1"
-        memory: 1Gi
+        cpu: "250m"
+        memory: 512Mi
       limits:
-        cpu: "2"
-        memory: 2Gi
+        cpu: "1"
+        memory: 1536Mi
         nvidia.com/gpu: 1
 
     persistence:
@@ -93,7 +94,7 @@ spec:
     shm:
       enabled: true
       mountPath: /dev/shm
-      sizeLimit: 2Gi
+      sizeLimit: 512Mi
 
     smokeTest:
       enabled: true
