@@ -7,7 +7,7 @@ spec:
   dependsOn:
     - name: minikube-postgres-operator
     - name: minikube-cert-manager-issuers
-    - name: minikube-monitoring
+#    - name: minikube-monitoring
   interval: 10m
   path: ./cluster-components/llm
   prune: true
