@@ -19,8 +19,14 @@ COMMAND_CHOICES = {"sync", "scaffold", "scaffold-config"}
 
 
 @dataclass(frozen=True)
+class ComponentDefinition:
+    cluster_resource_path: str
+
+
+@dataclass(frozen=True)
 class ServiceDefinition:
     workload_resource: str
+    cluster_dependency_name: str | None = None
     health_check_name: str | None = None
     env_values_configmap_name: str | None = None
     env_values_file: str | None = None
@@ -44,6 +50,7 @@ class EnvironmentConfig:
 @dataclass(frozen=True)
 class ClusterScaffoldConfig:
     cluster: str
+    components: list[str]
     environments: list[EnvironmentConfig]
 
 
@@ -54,20 +61,28 @@ class ParsedLine:
     content: str
 
 
+COMPONENT_DEFINITIONS: dict[str, ComponentDefinition] = {
+    "llm": ComponentDefinition(cluster_resource_path="../../cluster-components/llm.yaml"),
+}
+
+
 SERVICE_DEFINITIONS: dict[str, ServiceDefinition] = {
     "sandbox-nginx": ServiceDefinition(
+        cluster_dependency_name=None,
         workload_resource="../../../../apps/sandbox-nginx/overlays/{env}",
         health_check_name="sandbox-nginx",
         env_values_configmap_name="sandbox-nginx-values-env",
         env_values_file="sandbox-nginx.yaml",
     ),
     "sandbox-redis": ServiceDefinition(
+        cluster_dependency_name=None,
         workload_resource="../../../../apps/sandbox-redis/overlays/{env}",
         health_check_name="sandbox-redis",
         env_values_configmap_name="sandbox-redis-values-env",
         env_values_file="sandbox-redis-values.yaml",
     ),
     "sandbox-ai-consumer": ServiceDefinition(
+        cluster_dependency_name="llm",
         workload_resource="../../../../apps/sandbox-ai-consumer/overlays/{env}",
         health_check_name="sandbox-ai-consumer",
         env_values_configmap_name="sandbox-ai-consumer-values-env",
@@ -75,7 +90,12 @@ SERVICE_DEFINITIONS: dict[str, ServiceDefinition] = {
         image_repository="ghcr.io/robertkustra/{env}/sandbox-ai-consumer",
     ),
     "postgres": ServiceDefinition(
+        cluster_dependency_name=None,
         workload_resource="../../../../postgres/overlays/{env}",
+    ),
+    "llm": ServiceDefinition(
+        cluster_dependency_name="llm",
+        workload_resource="",
     ),
 }
 
@@ -430,6 +450,18 @@ def ensure_string_list(value: Any, field_name: str) -> list[str]:
     return items
 
 
+def load_component_names(value: Any, field_name: str) -> list[str]:
+    if value is None:
+        return []
+
+    components = ensure_string_list(value, field_name)
+    unsupported = [component for component in components if component not in COMPONENT_DEFINITIONS]
+    if unsupported:
+        supported = ", ".join(sorted(COMPONENT_DEFINITIONS))
+        err(f"unsupported component '{unsupported[0]}'. Supported components: {supported}")
+    return components
+
+
 def load_service_config(raw_service: Any, field_name: str) -> ServiceConfig:
     if isinstance(raw_service, str):
         service_name = raw_service.strip()
@@ -482,12 +514,22 @@ def load_service_configs(value: Any, field_name: str) -> list[ServiceConfig]:
     return services
 
 
+def collect_required_components(environments: list[EnvironmentConfig]) -> set[str]:
+    return {
+        definition.cluster_dependency_name
+        for environment in environments
+        for definition in (SERVICE_DEFINITIONS[service.name] for service in environment.services)
+        if definition.cluster_dependency_name
+    }
+
+
 def load_cluster_scaffold_config(config_file: Path) -> ClusterScaffoldConfig:
     document = load_scaffold_yaml(config_file)
 
     cluster_value = document.get("cluster", document.get("cluster_name"))
     cluster = ensure_string(cluster_value, "cluster")
     validate_cluster_name(cluster)
+    declared_components = load_component_names(document.get("components"), "components")
 
     raw_environments = document.get("environments")
     if not isinstance(raw_environments, list) or not raw_environments:
@@ -511,7 +553,14 @@ def load_cluster_scaffold_config(config_file: Path) -> ClusterScaffoldConfig:
         image_updater = ensure_boolean(raw_env.get("image_updater", False), f"environments[{index}].image_updater")
         environments.append(EnvironmentConfig(name=env_name, services=services, image_updater=image_updater))
 
-    return ClusterScaffoldConfig(cluster=cluster, environments=environments)
+    components = list(declared_components)
+    seen_components = set(components)
+    for component in sorted(collect_required_components(environments)):
+        if component not in seen_components:
+            components.append(component)
+            seen_components.add(component)
+
+    return ClusterScaffoldConfig(cluster=cluster, components=components, environments=environments)
 
 
 def write_text_file(target_file: Path, content: str) -> None:
@@ -538,12 +587,22 @@ def render_environment_workload_kustomization(environment: EnvironmentConfig, in
 
     for service in environment.services:
         definition = SERVICE_DEFINITIONS[service.name]
+        if not definition.workload_resource:
+            continue
         lines.append(f"  - {definition.workload_resource.format(env=environment.name)}")
 
     return "\n".join(lines) + "\n"
 
 
 def render_environment_flux_kustomization(cluster: str, environment: EnvironmentConfig) -> str:
+    cluster_dependencies = sorted(
+        {
+            definition.cluster_dependency_name
+            for definition in (SERVICE_DEFINITIONS[service.name] for service in environment.services)
+            if definition.cluster_dependency_name
+        }
+    )
+
     lines = [
         "apiVersion: kustomize.toolkit.fluxcd.io/v1",
         "kind: Kustomization",
@@ -554,12 +613,20 @@ def render_environment_flux_kustomization(cluster: str, environment: Environment
         "  interval: 10m",
         "  dependsOn:",
         f"    - name: {cluster}-postgres-operator",
-        f"    - name: {cluster}-monitoring",
-        f"    - name: sandbox-env-values-{environment.name}",
-        f"  path: ./clusters/{cluster}/environments/{environment.name}",
-        "  prune: true",
-        "  wait: true",
     ]
+
+    for dependency in cluster_dependencies:
+        lines.append(f"    - name: {cluster}-{dependency}")
+
+    lines.extend(
+        [
+            f"    - name: {cluster}-monitoring",
+            f"    - name: sandbox-env-values-{environment.name}",
+            f"  path: ./clusters/{cluster}/environments/{environment.name}",
+            "  prune: true",
+            "  wait: true",
+        ]
+    )
 
     health_check_services = [
         SERVICE_DEFINITIONS[service.name]
@@ -960,6 +1027,29 @@ def set_flux_system_resource_reference(flux_kustomization: Path, resource_path: 
     flux_kustomization.write_text("\n".join(filtered_lines) + "\n", encoding="utf-8")
 
 
+def set_cluster_kustomization_resource_reference(
+    cluster_kustomization: Path,
+    resource_path: str,
+    enabled: bool,
+) -> None:
+    if not cluster_kustomization.is_file():
+        err(f"required file not found: {cluster_kustomization}")
+
+    resource_line = f"  - {resource_path}"
+    lines = cluster_kustomization.read_text(encoding="utf-8").splitlines()
+    filtered_lines = [line for line in lines if line.strip() != resource_line.strip()]
+
+    if enabled:
+        insert_index = len(filtered_lines)
+        for index, line in enumerate(filtered_lines):
+            if line == CLUSTER_ENV_SECTION_MARKER:
+                insert_index = index
+                break
+        filtered_lines.insert(insert_index, resource_line)
+
+    cluster_kustomization.write_text("\n".join(filtered_lines) + "\n", encoding="utf-8")
+
+
 def apply_scaffold_config(
     config_file: Path,
     cluster_repo_root: Path,
@@ -1015,6 +1105,13 @@ def apply_scaffold_config(
                 err(f"required template file not found: {template_file}")
             write_template_if_missing(template_file, overlay_dir / definition.env_values_file, environment.name)
             sync_service_values_file(overlay_dir, service, environment)
+
+    for component_name, definition in COMPONENT_DEFINITIONS.items():
+        set_cluster_kustomization_resource_reference(
+            cluster_kustomization,
+            definition.cluster_resource_path,
+            component_name in config.components,
+        )
 
     environment_names = [environment.name for environment in config.environments]
     ensure_cluster_environment_entries_present(cluster_kustomization, environment_names)
@@ -1113,6 +1210,8 @@ def main() -> int:
 
     config = apply_scaffold_config(Path(args.target).resolve(), cluster_repo_root, env_values_repo_root, template_root)
     print(f"Applied scaffold config for cluster: {config.cluster}")
+    if config.components:
+        print("Components:", " ".join(config.components))
     print("Environments:", " ".join(environment.name for environment in config.environments))
     return 0
 

@@ -56,11 +56,14 @@ The scaffold command will:
 
 The YAML-driven scaffold command additionally:
 
+- installs or removes managed cluster components declared in the top-level `components` list
 - derives `clusters/minikube/environments/<env>/kustomization.yaml` from the declared service list
 - stores `ImageRepository` and `ImagePolicy` in `clusters/minikube/environments/<env>/image-reflector.yaml`
 - derives Flux `healthChecks` from the selected Helm-based services only
 - writes image tags from the service entries into the environment values overlays
 - lets `sandbox-ai-consumer` choose `ghcr.io/robertkustra/<prefix>/sandbox-ai-consumer` through `image_repository_prefix`
+- keeps `llm` available as a legacy service entry for cluster-level dependency only
+- always adds a dependency on `minikube-llm` when `sandbox-ai-consumer` is installed
 - enables image automation only for environments that explicitly set `image_updater: true`
 - keeps `ImageUpdateAutomation` resources in `clusters/minikube/flux-system/image-automation.yaml`
 - omits `ImageRepository` and `ImagePolicy` objects for services that are not installed in a given environment

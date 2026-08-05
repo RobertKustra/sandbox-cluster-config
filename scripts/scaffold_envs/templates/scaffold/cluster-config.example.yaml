@@ -1,4 +1,6 @@
 cluster: minikube
+components:
+  - llm
 environments:
   - name: dev
     services:

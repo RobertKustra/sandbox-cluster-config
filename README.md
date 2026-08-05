@@ -47,7 +47,7 @@ Scaffold a new environment from dedicated templates:
 ./scripts/scaffold_envs/manage-env-values.py scaffold <env>
 ```
 
-Apply a YAML scaffold config that declares the cluster, environments, enabled services, service tags, and per-environment image updater:
+Apply a YAML scaffold config that declares the cluster, shared components, environments, enabled services, service tags, and per-environment image updater:
 
 ```bash
 ./scripts/scaffold_envs/manage-env-values.py scaffold-config ./scripts/scaffold_envs/templates/scaffold/cluster-config.example.yaml
@@ -63,6 +63,8 @@ Example scaffold config:
 
 ```yaml
 cluster: minikube
+components:
+  - llm
 environments:
   - name: dev
     services:
@@ -90,6 +92,12 @@ Service entry fields:
 - `name`: service identifier used by the scaffold
 - `tag`: image tag to write into the generated env values file
 - `image_repository_prefix`: optional image path selector for services that support multiple registries or paths; for `sandbox-ai-consumer` this maps to `ghcr.io/robertkustra/<prefix>/sandbox-ai-consumer` and defaults to the environment name
+
+Special service behavior:
+
+- `components` is a top-level list of cluster-scoped installs managed by the scaffold. Today it supports `llm`, which toggles the `../../cluster-components/llm.yaml` entry in `clusters/<cluster>/kustomization.yaml`.
+- `llm` can still be declared in the service list for backward compatibility. It only adds a `dependsOn` entry on `<cluster>-llm` and does not add a per-environment workload or env-values file.
+- `sandbox-ai-consumer` always adds the same `<cluster>-llm` dependency because it requires the shared vLLM stack.
 
 The YAML-driven scaffold command will:
 
