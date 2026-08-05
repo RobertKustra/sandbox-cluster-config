@@ -37,11 +37,11 @@ spec:
         - --dtype
         - half
         - --max-model-len
-        - "512"
+        - "256"
         - --max-num-seqs
         - "1"
         - --gpu-memory-utilization
-        - "0.35"
+        - "0.30"
         - --enforce-eager
         - --served-model-name
         - ziutek_2.0
@@ -55,7 +55,7 @@ spec:
       - name: VLLM_USE_V2_MODEL_RUNNER
         value: "0"
       - name: PYTORCH_CUDA_ALLOC_CONF
-        value: "expandable_segments:True"
+        value: "expandable_segments:True,max_split_size_mb:32"
 
     probes:
       startup:
@@ -76,11 +76,11 @@ spec:
 
     resources:
       requests:
-        cpu: "250m"
-        memory: 512Mi
+        cpu: "200m"
+        memory: 384Mi
       limits:
         cpu: "1"
-        memory: 1536Mi
+        memory: 3Gi
         nvidia.com/gpu: 1
 
     persistence:
