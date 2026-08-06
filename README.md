@@ -86,7 +86,7 @@ environments:
         tag: "7.2.5"
       - name: postgres
     image_updater: false
-  - name: prod
+  - name: test
     services:
       - name: sandbox-nginx
         tag: "1.25"
@@ -94,7 +94,7 @@ environments:
         tag: "7.2.5"
       - name: sandbox-ai-consumer
         tag: "0.2.2"
-        image_repository_prefix: prod
+        image_repository_prefix: dev
       - name: postgres
     image_updater: true
 ```
