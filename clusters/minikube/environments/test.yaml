@@ -7,7 +7,7 @@ spec:
   interval: 10m
   dependsOn:
     - name: minikube-postgres-operator
-    - name: minikube-monitoring
+#    - name: minikube-monitoring
     - name: sandbox-env-values-test
   path: ./clusters/minikube/environments/test
   prune: true
