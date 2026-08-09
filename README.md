@@ -4,23 +4,41 @@ Flux GitOps configuration for the Sandbox cluster.
 
 ## Structure
 
-- clusters/minikube/ - cluster-specific entrypoint for the Minikube cluster
-- clusters/minikube/flux-system/ - active Flux manifests used by the Minikube cluster
-- bootstrap/flux-system-template/ - optional bootstrap/template Flux manifests kept for reference
-- clusters/minikube/environments/dev/ - isolated configuration for the dev environment
-- clusters/minikube/environments/test/ - isolated configuration for the test environment
-- clusters/minikube/environments/prod/ - isolated configuration for the prod environment
-- cluster-components/ - shared cluster-level components (cert-manager, traefik, monitoring, llm, and operator bootstrap)
-- sources/ - GitRepository definitions for the Helm charts and environment values repositories
-- apps/sandbox-ai-consumer/base/, apps/sandbox-nginx/base/, apps/sandbox-redis/base/ - per-application base packages
-- apps/sandbox-ai-consumer/overlays/<env>/, apps/sandbox-nginx/overlays/<env>/, apps/sandbox-redis/overlays/<env>/ - per-application overlays by environment
-- cluster-components/llm/ - LLM stack package (HelmRelease + ingress)
-- cluster-components/monitoring/ - monitoring stack package for the whole cluster
-- postgres/base/ - shared Crunchy PGO PostgresCluster manifest
-- postgres/overlays/dev/, postgres/overlays/test/, postgres/overlays/prod/ - environment overlays for PostgreSQL instances
-- separate repo `sandbox-scaffolder` - dedicated scaffold tooling for environment generation and sync
+```text
+sandbox-cluster-config/
+|-- apps/                          # HelmRelease bases and environment overlays
+|   |-- sandbox-ai-consumer/
+|   |-- sandbox-nginx/
+|   `-- sandbox-redis/
+|-- bootstrap/
+|   `-- flux-system-template/      # Reference manifests for bootstrapping Flux
+|-- cluster-components/            # Shared, cluster-level Flux stages and packages
+|   |-- cert-manager/
+|   |-- cert-manager-issuers/
+|   |-- llm/
+|   |-- monitoring/
+|   `-- traefik/
+|-- clusters/
+|   `-- minikube/
+|       |-- environments/          # Environment stages and workload composition
+|       |   |-- dev/
+|       |   |-- test/
+|       |   `-- prod/
+|       |-- flux-system/           # Active Flux bootstrap and automation manifests
+|       `-- kustomization.yaml     # Minikube cluster entrypoint
+|-- postgres/                      # Shared PostgresCluster base and environment overlays
+|   |-- base/
+|   `-- overlays/
+|-- scripts/                       # Flux SSH and local host configuration helpers
+|-- sources/                       # External GitRepository and HelmRepository sources
+`-- utils/operators/postgres/      # PostgreSQL operator installation resources
+```
 
-Note: only `clusters/minikube/flux-system` is reconciled by the cluster entrypoint. The bootstrap template is not part of the active Minikube reconcile path.
+Each application under `apps/` has a shared `base/` and `overlays/dev`, `overlays/test`, and `overlays/prod`. The files `clusters/minikube/environments/<env>.yaml` define Flux Kustomization stages, while the matching directories compose the workloads deployed into each environment.
+
+The active entrypoint is `clusters/minikube/kustomization.yaml`. It includes `sources/`, `flux-system/`, selected cluster components, and only the environment stages enabled in that file. The repository currently contains definitions for `dev`, `test`, and `prod`, but only `dev` is enabled. Files under `bootstrap/flux-system-template/` are reference templates and are not part of the active reconcile path.
+
+Environment generation and synchronization tooling lives in the separate `sandbox-scaffolder` repository.
 
 ## Migration to sandbox-scaffolder
 

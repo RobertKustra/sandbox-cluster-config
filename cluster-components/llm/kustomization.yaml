@@ -8,6 +8,6 @@ resources:
 secretGenerator:
   - name: hf-token
     literals:
-      - HF_TOKEN=dev-change-me
+      - HF_TOKEN=<password-placeholder>
 generatorOptions:
   disableNameSuffixHash: true
