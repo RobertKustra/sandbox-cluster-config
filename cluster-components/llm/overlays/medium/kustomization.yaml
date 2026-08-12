@@ -39,4 +39,3 @@ patches:
           cpu: "2"
           memory: 8Gi
           nvidia.com/gpu: 1
-
