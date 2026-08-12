@@ -6,6 +6,6 @@ resources:
 secretGenerator:
   - name: sandbox-redis-auth
     literals:
-      - sandbox-redis-password=prod-change-me
+      - sandbox-redis-password=<password-placeholder>
 generatorOptions:
   disableNameSuffixHash: true
