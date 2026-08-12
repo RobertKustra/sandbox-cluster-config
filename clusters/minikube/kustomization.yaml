@@ -12,3 +12,5 @@ resources:
   - ../../cluster-components/llm.yaml
   ## Environments for different stages
   - ./environments/dev.yaml
+  # - ./environments/test.yaml
+  # - ./environments/prod.yaml
