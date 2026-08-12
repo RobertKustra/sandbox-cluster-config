@@ -8,7 +8,7 @@ spec:
   dependsOn:
     - name: minikube-postgres-operator
     - name: minikube-llm
-#    - name: minikube-monitoring
+    - name: minikube-monitoring
     - name: sandbox-env-values-prod
   path: ./clusters/minikube/environments/prod
   prune: true
