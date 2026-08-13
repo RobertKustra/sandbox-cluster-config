@@ -9,6 +9,7 @@ spec:
     - name: minikube-postgres-operator
     - name: minikube-monitoring
     - name: sandbox-env-values-test
+    - name: minikube-llm
   path: ./clusters/minikube/environments/test
   prune: true
   wait: true
