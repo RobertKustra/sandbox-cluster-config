@@ -4,3 +4,4 @@ resources:
   - ../../../../apps/sandbox-nginx/overlays/test
   - ../../../../apps/sandbox-redis/overlays/test
   - ../../../../postgres/overlays/test
+  - ../../../../apps/sandbox-ai-consumer/overlays/test
