@@ -4,6 +4,7 @@ metadata:
   name: sandbox-vllm
 spec:
   interval: 5m
+  timeout: 20m0s
   chart:
     spec:
       chart: charts/sandbox-vllm
@@ -102,5 +103,5 @@ spec:
         repository: curlimages/curl
         tag: "8.9.1"
         pullPolicy: IfNotPresent
-      retries: 30
-      sleepSeconds: 5
+      retries: 300
+      sleepSeconds: 15

@@ -12,7 +12,7 @@ spec:
   path: ./cluster-components/llm/overlays/tiny
   prune: true
   wait: true
-  timeout: 5m0s
+  timeout: 25m0s
   sourceRef:
     kind: GitRepository
     name: flux-system
