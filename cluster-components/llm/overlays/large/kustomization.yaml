@@ -2,3 +2,40 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
+patches:
+  - target:
+      group: helm.toolkit.fluxcd.io
+      version: v2
+      kind: HelmRelease
+      name: sandbox-vllm
+    patch: |-
+      - op: replace
+        path: /spec/values/model/args
+        value:
+          - Qwen/Qwen2.5-3B-Instruct
+          - --host
+          - 0.0.0.0
+          - --port
+          - "8000"
+          - --dtype
+          - half
+          - --max-model-len
+          - "1536"
+          - --max-num-seqs
+          - "1"
+          - --gpu-memory-utilization
+          - "0.80"
+          - --enforce-eager
+          - --served-model-name
+          - ziutek_2.0
+      - op: replace
+        path: /spec/values/resources/requests
+        value:
+          cpu: "1"
+          memory: 6Gi
+      - op: replace
+        path: /spec/values/resources/limits
+        value:
+          cpu: "3"
+          memory: 12Gi
+          nvidia.com/gpu: 1
