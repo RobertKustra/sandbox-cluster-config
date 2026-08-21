@@ -9,7 +9,7 @@ spec:
     - name: minikube-cert-manager-issuers
     - name: minikube-monitoring
   interval: 10m
-  path: ./cluster-components/llm/overlays/medium
+  path: ./cluster-components/llm/overlays/large
   prune: true
   wait: true
   timeout: 25m0s
