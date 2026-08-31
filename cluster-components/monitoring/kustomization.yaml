@@ -5,6 +5,9 @@ configMapGenerator:
   - name: prometheus-alert-rules
     files:
       - values.yaml=alert-rules.yaml
+  - name: grafana-dashboards
+    files:
+      - values.yaml=grafana-dashboards-values.yaml
 generatorOptions:
   disableNameSuffixHash: true
 resources:
