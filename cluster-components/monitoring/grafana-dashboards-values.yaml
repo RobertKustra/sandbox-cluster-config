@@ -844,4 +844,107 @@ dashboards:
           "version": 1,
           "weekStart": ""
         }
+    cert-manager-certificates:
+      json: |
+        {
+          "annotations": {"list": []},
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "panels": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+              "id": 41,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+              "targets": [{"expr": "count(certmanager_certificate_ready_status{condition=\"True\"} == 1) or vector(0)", "legendFormat": "ready", "refId": "A"}],
+              "title": "Ready Certificates",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+              "id": 42,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+              "targets": [{"expr": "count(certmanager_certificate_ready_status{condition=\"False\"} == 1) or vector(0)", "legendFormat": "not ready", "refId": "A"}],
+              "title": "Not Ready Certificates",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}]}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+              "id": 43,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+              "targets": [{"expr": "count((certmanager_certificate_expiration_timestamp_seconds - time()) < 30 * 24 * 60 * 60) or vector(0)", "legendFormat": "expiring", "refId": "A"}],
+              "title": "Expiring Within 30 Days",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "d", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "orange", "value": 7}, {"color": "green", "value": 30}]}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+              "id": 44,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+              "targets": [{"expr": "min((certmanager_certificate_expiration_timestamp_seconds - time()) / 86400) or vector(0)", "legendFormat": "days", "refId": "A"}],
+              "title": "Nearest Expiration",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "d", "color": {"mode": "palette-classic"}}, "overrides": []},
+              "gridPos": {"h": 10, "w": 12, "x": 0, "y": 8},
+              "id": 45,
+              "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "asc"}},
+              "targets": [{"expr": "(certmanager_certificate_expiration_timestamp_seconds - time()) / 86400", "legendFormat": "{{namespace}} / {{name}}", "refId": "A"}],
+              "title": "Days Until Certificate Expiration",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "d", "color": {"mode": "palette-classic"}}, "overrides": []},
+              "gridPos": {"h": 10, "w": 12, "x": 12, "y": 8},
+              "id": 46,
+              "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "asc"}},
+              "targets": [{"expr": "(certmanager_certificate_renewal_timestamp_seconds - time()) / 86400", "legendFormat": "{{namespace}} / {{name}}", "refId": "A"}],
+              "title": "Days Until Planned Renewal",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "ops", "color": {"mode": "palette-classic"}}, "overrides": []},
+              "gridPos": {"h": 9, "w": 24, "x": 0, "y": 18},
+              "id": 47,
+              "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
+              "targets": [{"expr": "sum by (controller) (rate(certmanager_controller_sync_error_count[5m]))", "legendFormat": "{{controller}}", "refId": "A"}],
+              "title": "Controller Reconciliation Errors / s",
+              "type": "timeseries"
+            }
+          ],
+          "schemaVersion": 39,
+          "style": "dark",
+          "tags": ["cert-manager", "certificates", "tls"],
+          "templating": {"list": []},
+          "time": {"from": "now-24h", "to": "now"},
+          "timepicker": {},
+          "timezone": "",
+          "title": "cert-manager Certificates",
+          "uid": "cert-manager-certificates",
+          "version": 1,
+          "weekStart": ""
+        }
 
