@@ -947,4 +947,115 @@ dashboards:
           "version": 1,
           "weekStart": ""
         }
-
+    flux-gitops:
+      json: |
+        {
+          "annotations": {"list": []},
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "panels": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 6}]}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+              "id": 51,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+              "targets": [{"expr": "count(up{namespace=\"flux-system\", app_kubernetes_io_part_of=\"flux\"} == 1) or vector(0)", "legendFormat": "available", "refId": "A"}],
+              "title": "Available Controllers",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+              "id": 52,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+              "targets": [{"expr": "count(up{namespace=\"flux-system\", app_kubernetes_io_part_of=\"flux\"} == 0) or vector(0)", "legendFormat": "unavailable", "refId": "A"}],
+              "title": "Unavailable Controllers",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "ops", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 0.01}, {"color": "red", "value": 0.1}]}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+              "id": 53,
+              "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+              "targets": [{"expr": "sum(rate(controller_runtime_reconcile_errors_total{namespace=\"flux-system\", app_kubernetes_io_part_of=\"flux\"}[5m])) or vector(0)", "legendFormat": "errors", "refId": "A"}],
+              "title": "Reconciliation Errors / s",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "s", "color": {"mode": "palette-classic"}},
+                "overrides": []
+              },
+              "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+              "id": 54,
+              "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
+              "targets": [{"expr": "histogram_quantile(0.95, sum by (le, kind) (rate(gotk_reconcile_duration_seconds_bucket[5m])))", "legendFormat": "{{kind}}", "refId": "A"}],
+              "title": "Reconciliation Duration p95",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "ops", "color": {"mode": "palette-classic"}},
+                "overrides": []
+              },
+              "gridPos": {"h": 10, "w": 12, "x": 0, "y": 8},
+              "id": 55,
+              "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
+              "targets": [{"expr": "sum by (kind) (rate(gotk_reconcile_duration_seconds_count[5m]))", "legendFormat": "{{kind}}", "refId": "A"}],
+              "title": "Reconciliations / s by Kind",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "s", "color": {"mode": "palette-classic"}},
+                "overrides": []
+              },
+              "gridPos": {"h": 10, "w": 12, "x": 12, "y": 8},
+              "id": 56,
+              "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
+              "targets": [{"expr": "sum by (kind, namespace, name) (rate(gotk_reconcile_duration_seconds_sum[5m])) / sum by (kind, namespace, name) (rate(gotk_reconcile_duration_seconds_count[5m]))", "legendFormat": "{{kind}} {{namespace}}/{{name}}", "refId": "A"}],
+              "title": "Average Reconciliation Duration by Resource",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {
+                "defaults": {"unit": "short", "color": {"mode": "palette-classic"}},
+                "overrides": []
+              },
+              "gridPos": {"h": 9, "w": 24, "x": 0, "y": 18},
+              "id": 57,
+              "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
+              "targets": [{"expr": "sum by (app, name) (workqueue_depth{namespace=\"flux-system\", app_kubernetes_io_part_of=\"flux\"})", "legendFormat": "{{app}} / {{name}}", "refId": "A"}],
+              "title": "Controller Work Queue Depth",
+              "type": "timeseries"
+            }
+          ],
+          "schemaVersion": 39,
+          "style": "dark",
+          "tags": ["flux", "gitops", "kubernetes"],
+          "templating": {"list": []},
+          "time": {"from": "now-6h", "to": "now"},
+          "timepicker": {},
+          "timezone": "",
+          "title": "Flux GitOps",
+          "uid": "flux-gitops",
+          "version": 1,
+          "weekStart": ""
+        }
