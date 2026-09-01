@@ -18,7 +18,7 @@ patches:
       - op: replace
         path: /spec/values/model/args
         value:
-          - Qwen/Qwen2.5-Coder-7B-Instruct
+          - Qwen/Qwen2.5-Coder-3B-Instruct
           - --host
           - 0.0.0.0
           - --port
@@ -26,11 +26,11 @@ patches:
           - --dtype
           - half
           - --max-model-len
-          - "1024"
+          - "2048"
           - --max-num-seqs
           - "1"
           - --gpu-memory-utilization
-          - "0.8"
+          - "0.5"
           - --enforce-eager
           - --served-model-name
           - ziutek_2.0
@@ -38,7 +38,7 @@ patches:
         path: /spec/values/resources/requests
         value:
           cpu: "500m"
-          memory: 4Gi
+          memory: 3Gi
       - op: replace
         path: /spec/values/resources/limits
         value:
