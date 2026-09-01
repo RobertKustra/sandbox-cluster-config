@@ -10,6 +10,12 @@ patches:
       name: sandbox-vllm
     patch: |-
       - op: replace
+        path: /spec/values/image
+        value:
+          repository: vllm/vllm-openai
+          tag: nightly
+          pullPolicy: Always
+      - op: replace
         path: /spec/values/model/args
         value:
           - Qwen/Qwen2.5-Coder-7B-Instruct
