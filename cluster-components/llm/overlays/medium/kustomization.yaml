@@ -24,7 +24,7 @@ patches:
           - --max-num-seqs
           - "8"
           - --gpu-memory-utilization
-          - "0.55"
+          - "0.65"
           - --enforce-eager
           - --served-model-name
           - ziutek_2.0
