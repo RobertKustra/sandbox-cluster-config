@@ -12,13 +12,13 @@ patches:
       - op: replace
         path: /spec/values/model/args
         value:
-          - Qwen/Qwen2.5-Coder-7B-Instruct-GPTQ-Int4
+          - Qwen/Qwen2.5-Coder-7B-Instruct-AWQ
           - --host
           - 0.0.0.0
           - --port
           - "8000"
           - --quantization
-          - gptq
+          - awq
           - --max-model-len
           - "2048"
           - --max-num-seqs
