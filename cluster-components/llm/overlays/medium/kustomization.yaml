@@ -22,9 +22,9 @@ patches:
           - --max-model-len
           - "2048"
           - --max-num-seqs
-          - "4"
+          - "2"
           - --gpu-memory-utilization
-          - "0.85"
+          - "0.9"
           - --enforce-eager
           - --served-model-name
           - ziutek_2.0
