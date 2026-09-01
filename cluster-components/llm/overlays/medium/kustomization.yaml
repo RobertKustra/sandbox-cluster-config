@@ -24,9 +24,7 @@ patches:
           - --port
           - "8000"
           - --quantization
-          - bitsandbytes
-          - --load-format
-          - bitsandbytes
+          - fp8
           - --max-model-len
           - "1024"
           - --max-num-seqs
