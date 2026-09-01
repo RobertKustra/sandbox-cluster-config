@@ -12,17 +12,19 @@ patches:
       - op: replace
         path: /spec/values/model/args
         value:
-          - Qwen/Qwen2.5-Coder-7B-Instruct-AWQ
+          - Qwen/Qwen2.5-Coder-7B-Instruct
           - --host
           - 0.0.0.0
           - --port
           - "8000"
           - --quantization
-          - awq
+          - bitsandbytes
+          - --load-format
+          - bitsandbytes
           - --max-model-len
-          - "2048"
+          - "1024"
           - --max-num-seqs
-          - "2"
+          - "1"
           - --gpu-memory-utilization
           - "0.8"
           - --enforce-eager
