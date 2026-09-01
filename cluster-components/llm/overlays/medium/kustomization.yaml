@@ -22,7 +22,7 @@ patches:
           - --max-model-len
           - "4096"
           - --max-num-seqs
-          - "2"
+          - "8"
           - --gpu-memory-utilization
           - "0.55"
           - --enforce-eager
