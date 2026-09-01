@@ -20,11 +20,11 @@ patches:
           - --dtype
           - half
           - --max-model-len
-          - "2048"
+          - "4096"
           - --max-num-seqs
           - "2"
           - --gpu-memory-utilization
-          - "0.40"
+          - "0.55"
           - --enforce-eager
           - --served-model-name
           - ziutek_2.0
