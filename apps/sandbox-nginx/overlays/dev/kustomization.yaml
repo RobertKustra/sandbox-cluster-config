@@ -11,3 +11,6 @@ patches:
       - op: replace
         path: /spec/rules/0/host
         value: sandbox-nginx.dev.local
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: sandbox-nginx.dev.local
