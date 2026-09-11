@@ -27,6 +27,19 @@ spec:
     server:
       service:
         type: ClusterIP
+      extraInitContainers:
+        - name: init-storage-permissions
+          image: busybox:1.37
+          command:
+            - sh
+            - -c
+            - chown -R 65534:65534 /data
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+          volumeMounts:
+            - name: storage-volume
+              mountPath: /data
       persistentVolume:
         enabled: true
         size: 8Gi
