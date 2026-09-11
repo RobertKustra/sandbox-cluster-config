@@ -64,7 +64,7 @@ spec:
       allowPrivilegeEscalation: false
 
     initChownData:
-      enabled: false
+      enabled: true
 
     persistence:
       enabled: true
