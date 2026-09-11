@@ -12,7 +12,7 @@ spec:
   path: ./cluster-components/llm/overlays/medium
   prune: true
   wait: true
-  timeout: 25m0s
+  timeout: 45m0s
   sourceRef:
     kind: GitRepository
     name: flux-system
