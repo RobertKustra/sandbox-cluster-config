@@ -197,10 +197,77 @@ The script will print the public key at the end. Copy it and add it to GitHub un
 
 ### Start Minikube
 
+For the complete platform with the `dev`, `test`, and `prod` environments, allocate a total of at least 12 CPUs and 16 GB of RAM.
+
+A smaller test profile has been verified with 5 CPUs and 6 GB of RAM. This configuration runs one application environment, such as `dev`, and uses the `tiny` LLM overlay. Treat these values as the tested minimum for this specific profile; other models or additional components may require more resources.
+
+Single-node profile:
+
 ```bash
-minikube start
-kubectl config current-context
+minikube start \
+  -p minikube \
+  --driver=docker \
+  --container-runtime=docker \
+  --gpus=all \
+  --cpus=12 \
+  --memory=16384mb
 ```
+
+Two-node profile, with 6 CPUs and 8 GB of RAM per node:
+
+```bash
+minikube start \
+  -p minikube \
+  --nodes=2 \
+  --driver=docker \
+  --container-runtime=docker \
+  --gpus=all \
+  --cpus=6 \
+  --memory=8192mb
+
+kubectl label node minikube-m02 \
+  sandbox.local/gpu=nvidia \
+  --overwrite
+
+kubectl patch daemonset nvidia-device-plugin-daemonset \
+  -n kube-system \
+  --type=merge \
+  -p '{
+    "spec": {
+      "template": {
+        "spec": {
+          "nodeSelector": {
+            "sandbox.local/gpu": "nvidia"
+          }
+        }
+      }
+    }
+  }'
+```
+
+The label and DaemonSet patch make only `minikube-m02` advertise the GPU to the Kubernetes scheduler. GPU workloads use node affinity for `sandbox.local/gpu=nvidia` and are therefore scheduled on that node.
+
+Enable CSI Hostpath for either profile before bootstrapping Flux:
+
+```bash
+
+minikube addons enable volumesnapshots -p minikube
+minikube addons enable csi-hostpath-driver -p minikube
+
+kubectl annotate storageclass standard \
+  storageclass.kubernetes.io/is-default-class- \
+  --overwrite
+
+kubectl annotate storageclass csi-hostpath-sc \
+  storageclass.kubernetes.io/is-default-class=true \
+  --overwrite
+
+kubectl config current-context
+kubectl get storageclass
+kubectl get csinode
+```
+
+The manifests use `csi-hostpath-sc` for persistent workloads. CSI Hostpath supports single-node and multi-node Minikube profiles by assigning each local volume to a specific node. It is not shared or replicated storage, and all data is disposable when the Minikube profile is deleted.
 
 ### 2. Install Flux CLI
 
