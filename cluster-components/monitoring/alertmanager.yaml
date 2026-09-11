@@ -23,7 +23,7 @@ spec:
     persistence:
       enabled: true
       size: 50Mi
-      storageClass: standard
+      storageClass: csi-hostpath-sc
     config:
       global:
         resolve_timeout: 5m

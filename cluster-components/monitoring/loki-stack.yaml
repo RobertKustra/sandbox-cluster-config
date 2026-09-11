@@ -35,7 +35,7 @@ spec:
       persistence:
         enabled: true
         size: 10Gi
-        storageClass: "standard"
+        storageClass: csi-hostpath-sc
     promtail:
       enabled: false
     grafana:

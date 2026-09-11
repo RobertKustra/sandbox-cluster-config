@@ -43,4 +43,7 @@ spec:
       persistentVolume:
         enabled: true
         size: 8Gi
-        storageClass: "standard"
+        storageClass: csi-hostpath-sc
+    alertmanager:
+      persistence:
+        storageClass: csi-hostpath-sc
