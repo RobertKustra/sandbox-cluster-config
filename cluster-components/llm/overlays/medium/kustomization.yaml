@@ -13,7 +13,7 @@ patches:
         path: /spec/values/image
         value:
           repository: vllm/vllm-openai
-          tag: nightly
+          tag: latest
           pullPolicy: Always
       - op: replace
         path: /spec/values/model/args
