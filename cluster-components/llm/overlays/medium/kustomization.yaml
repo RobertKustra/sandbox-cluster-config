@@ -34,11 +34,13 @@ patches:
           - --enforce-eager
           - --served-model-name
           - ziutek_2.0
+
       - op: replace
         path: /spec/values/resources/requests
         value:
           cpu: "500m"
           memory: 3Gi
+ 
       - op: replace
         path: /spec/values/resources/limits
         value:
