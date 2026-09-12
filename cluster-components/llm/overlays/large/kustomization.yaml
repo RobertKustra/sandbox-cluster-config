@@ -12,7 +12,7 @@ patches:
       - op: replace
         path: /spec/values/model/args
         value:
-          - Qwen/Qwen2.5-3B-Instruct
+          - Qwen/Qwen2.5-Coder-3B-Instruct
           - --host
           - 0.0.0.0
           - --port
@@ -20,11 +20,11 @@ patches:
           - --dtype
           - half
           - --max-model-len
-          - "1536"
+          - "8192"
           - --max-num-seqs
-          - "1"
+          - "8"
           - --gpu-memory-utilization
-          - "0.80"
+          - "0.85"
           - --enforce-eager
           - --served-model-name
           - ziutek_2.0
