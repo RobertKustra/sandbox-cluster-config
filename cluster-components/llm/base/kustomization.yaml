@@ -5,6 +5,7 @@ resources:
   - ./namespace.yaml
   - ./sandbox-vllm.yaml
   - ./sandbox-vllm-ingress.yaml
+  - ./pvc-usage-exporter.yaml
 secretGenerator:
   - name: hf-token
     literals:
