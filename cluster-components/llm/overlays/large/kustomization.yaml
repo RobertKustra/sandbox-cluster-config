@@ -43,7 +43,7 @@ patches:
         path: /spec/values/resources/limits
         value:
           cpu: "3"
-          memory: 20Gi
+          memory: 24Gi
           nvidia.com/gpu: 1
 
       - op: replace
