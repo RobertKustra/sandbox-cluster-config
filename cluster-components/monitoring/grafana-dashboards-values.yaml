@@ -1076,8 +1076,8 @@ dashboards:
               "gridPos": {"h": 7, "w": 6, "x": 0, "y": 0},
               "id": 61,
               "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
-              "targets": [{"expr": "sum(kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "used", "refId": "A"}],
-              "title": "Used Space",
+              "targets": [{"expr": "sum(kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "requested", "refId": "A"}],
+              "title": "Requested Capacity",
               "type": "stat"
             },
             {
@@ -1089,8 +1089,8 @@ dashboards:
               "gridPos": {"h": 7, "w": 6, "x": 6, "y": 0},
               "id": 62,
               "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
-              "targets": [{"expr": "sum(kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "capacity", "refId": "A"}],
-              "title": "Total Capacity",
+              "targets": [{"expr": "sum(label_replace(kube_persistentvolume_capacity_bytes, \"volumename\", \"$1\", \"persistentvolume\", \"(.*)\") * on (volumename) group_right kube_persistentvolumeclaim_info{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "bound", "refId": "A"}],
+              "title": "Bound Capacity",
               "type": "stat"
             },
             {
@@ -1102,8 +1102,8 @@ dashboards:
               "gridPos": {"h": 7, "w": 6, "x": 12, "y": 0},
               "id": 63,
               "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
-              "targets": [{"expr": "100 * sum(kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}) / clamp_min(sum(kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}), 1)", "legendFormat": "used", "refId": "A"}],
-              "title": "Used Capacity",
+              "targets": [{"expr": "100 * sum(label_replace(kube_persistentvolume_capacity_bytes, \"volumename\", \"$1\", \"persistentvolume\", \"(.*)\") * on (volumename) group_right kube_persistentvolumeclaim_info{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}) / clamp_min(sum(kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}), 1)", "legendFormat": "provisioned", "refId": "A"}],
+              "title": "Provisioned Capacity",
               "type": "stat"
             },
             {
@@ -1115,21 +1115,21 @@ dashboards:
               "gridPos": {"h": 7, "w": 6, "x": 18, "y": 0},
               "id": 64,
               "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
-              "targets": [{"expr": "sum(kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}) - sum(kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "available", "refId": "A"}],
-              "title": "Available Space",
+              "targets": [{"expr": "sum(label_replace(kube_persistentvolume_capacity_bytes, \"volumename\", \"$1\", \"persistentvolume\", \"(.*)\") * on (volumename) group_right kube_persistentvolumeclaim_info{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}) - sum(kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "difference", "refId": "A"}],
+              "title": "Capacity Difference",
               "type": "stat"
             },
             {
               "datasource": {"type": "prometheus", "uid": "prometheus"},
               "fieldConfig": {
-                "defaults": {"unit": "percent", "min": 0, "max": 100, "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 75}, {"color": "red", "value": 90}]}},
+                "defaults": {"unit": "bytes", "min": 0, "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}},
                 "overrides": []
               },
               "gridPos": {"h": 10, "w": 24, "x": 0, "y": 7},
               "id": 65,
               "options": {"displayMode": "gradient", "minVizHeight": 10, "minVizWidth": 0, "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showUnfilled": true, "valueMode": "color"},
-              "targets": [{"expr": "100 * sum by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}) / clamp_min(sum by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}), 1)", "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}", "refId": "A"}],
-              "title": "PVC Usage",
+              "targets": [{"expr": "sum by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}", "refId": "A"}],
+              "title": "PVC Requested Capacity",
               "type": "bargauge"
             },
             {
@@ -1138,8 +1138,8 @@ dashboards:
               "gridPos": {"h": 10, "w": 12, "x": 0, "y": 17},
               "id": 66,
               "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
-              "targets": [{"expr": "kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}", "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}", "refId": "A"}],
-              "title": "Used Space Over Time",
+              "targets": [{"expr": "sum by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}", "refId": "A"}],
+              "title": "Requested Capacity Over Time",
               "type": "timeseries"
             },
             {
@@ -1148,8 +1148,8 @@ dashboards:
               "gridPos": {"h": 10, "w": 12, "x": 12, "y": 17},
               "id": 67,
               "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "asc"}},
-              "targets": [{"expr": "sum by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"}) - sum by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}", "refId": "A"}],
-              "title": "Available Space Over Time",
+              "targets": [{"expr": "sum by (namespace, persistentvolumeclaim) (label_replace(kube_persistentvolume_capacity_bytes, \"volumename\", \"$1\", \"persistentvolume\", \"(.*)\") * on (volumename) group_right kube_persistentvolumeclaim_info{namespace=~\"$namespace\", persistentvolumeclaim=~\"$persistentvolumeclaim\"})", "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}", "refId": "A"}],
+              "title": "Bound Capacity Over Time",
               "type": "timeseries"
             }
           ],
