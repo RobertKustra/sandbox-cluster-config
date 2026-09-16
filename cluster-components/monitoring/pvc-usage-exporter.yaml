@@ -1,0 +1,26 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pvc-usage-exporter
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: charts/pvc-usage-exporter
+      version: "0.1.0"
+      sourceRef:
+        kind: GitRepository
+        name: sandbox-helm-charts
+        namespace: flux-system
+  values:
+    pvcs:
+      - name: grafana
+        claimName: grafana
+      - name: prometheus-server
+        claimName: prometheus-server
+      - name: alertmanager
+        claimName: storage-alertmanager-0
+      - name: prometheus-alertmanager
+        claimName: storage-prometheus-alertmanager-0
+      - name: loki
+        claimName: storage-loki-stack-0

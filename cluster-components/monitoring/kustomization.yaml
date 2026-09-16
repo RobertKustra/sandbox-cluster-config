@@ -13,7 +13,7 @@ generatorOptions:
 resources:
   - ./namespace.yaml
   - ./prometheus.yaml
-  - ./pvc-usage-exporters.yaml
+  - ./pvc-usage-exporter.yaml
   - ./grafana.yaml
   - ./jaeger.yaml
   - ./gpu-exporter.yaml
