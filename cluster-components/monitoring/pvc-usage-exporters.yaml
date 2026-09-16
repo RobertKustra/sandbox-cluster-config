@@ -24,8 +24,8 @@ spec:
                   used_bytes=$((used_kib * 1024))
                   wget -qO- \
                     --header='Content-Type: text/plain; version=0.0.4' \
-                    --post-data="pvc_directory_used_bytes ${used_bytes}" \
-                    "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/${POD_NAMESPACE}/persistentvolumeclaim/${PVC_NAME}"
+                     --post-data="pvc_directory_used_bytes $used_bytes" \
+                     "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/$POD_NAMESPACE/persistentvolumeclaim/$PVC_NAME"
               env:
                 - name: POD_NAMESPACE
                   valueFrom:
@@ -79,8 +79,8 @@ spec:
                   used_bytes=$((used_kib * 1024))
                   wget -qO- \
                     --header='Content-Type: text/plain; version=0.0.4' \
-                    --post-data="pvc_directory_used_bytes ${used_bytes}" \
-                    "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/${POD_NAMESPACE}/persistentvolumeclaim/${PVC_NAME}"
+                     --post-data="pvc_directory_used_bytes $used_bytes" \
+                     "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/$POD_NAMESPACE/persistentvolumeclaim/$PVC_NAME"
               env:
                 - name: POD_NAMESPACE
                   valueFrom:
@@ -134,8 +134,8 @@ spec:
                   used_bytes=$((used_kib * 1024))
                   wget -qO- \
                     --header='Content-Type: text/plain; version=0.0.4' \
-                    --post-data="pvc_directory_used_bytes ${used_bytes}" \
-                    "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/${POD_NAMESPACE}/persistentvolumeclaim/${PVC_NAME}"
+                     --post-data="pvc_directory_used_bytes $used_bytes" \
+                     "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/$POD_NAMESPACE/persistentvolumeclaim/$PVC_NAME"
               env:
                 - name: POD_NAMESPACE
                   valueFrom:
@@ -189,8 +189,8 @@ spec:
                   used_bytes=$((used_kib * 1024))
                   wget -qO- \
                     --header='Content-Type: text/plain; version=0.0.4' \
-                    --post-data="pvc_directory_used_bytes ${used_bytes}" \
-                    "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/${POD_NAMESPACE}/persistentvolumeclaim/${PVC_NAME}"
+                     --post-data="pvc_directory_used_bytes $used_bytes" \
+                     "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/$POD_NAMESPACE/persistentvolumeclaim/$PVC_NAME"
               env:
                 - name: POD_NAMESPACE
                   valueFrom:
@@ -244,8 +244,8 @@ spec:
                   used_bytes=$((used_kib * 1024))
                   wget -qO- \
                     --header='Content-Type: text/plain; version=0.0.4' \
-                    --post-data="pvc_directory_used_bytes ${used_bytes}" \
-                    "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/${POD_NAMESPACE}/persistentvolumeclaim/${PVC_NAME}"
+                    --post-data="pvc_directory_used_bytes $used_bytes" \
+                    "http://prometheus-prometheus-pushgateway.monitoring.svc:9091/metrics/job/pvc-directory-usage/namespace/$POD_NAMESPACE/persistentvolumeclaim/$PVC_NAME"
               env:
                 - name: POD_NAMESPACE
                   valueFrom:
