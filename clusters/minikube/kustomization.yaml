@@ -14,5 +14,5 @@ resources:
   - ../../cluster-components/langfuse.yaml
   ## Environments for different stages
   - ./environments/dev.yaml
-  - ./environments/test.yaml
-  - ./environments/prod.yaml
+  # - ./environments/test.yaml
+  # - ./environments/prod.yaml
