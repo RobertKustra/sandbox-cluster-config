@@ -1,0 +1,25 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-clickhouse-operator
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: minikube-cert-manager
+  interval: 10m
+  path: ./cluster-components/clickhouse-operator
+  prune: true
+  wait: true
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: clickhouse-operator-controller-manager
+      namespace: clickhouse-operator
+  timeout: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substitute:
+      cluster: minikube
+      environment: clickhouse-operator
