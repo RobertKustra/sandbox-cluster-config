@@ -8,8 +8,9 @@ spec:
     - name: minikube-clickhouse-operator
     - name: minikube-cert-manager-issuers
     - name: minikube-traefik
+    - name: minikube-langfuse-postgres
   interval: 10m
-  path: ./cluster-components/langfuse
+  path: ./cluster-components/langfuse/overlays/minikube
   prune: true
   wait: true
   healthChecks:

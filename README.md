@@ -153,11 +153,16 @@ The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
 
 ## Langfuse deployment
 
-The Langfuse component deploys `sandbox-langfuse` from the local chart repository. It waits for cert-manager, Traefik, and the ClickHouse operator before installing Langfuse and its data stores.
+The Langfuse stack is split into ordered Flux stages for the namespace, PostgreSQL, and the application. PostgreSQL is managed by Crunchy PGO; the Langfuse chart deploys the remaining data stores and connects to the operator-managed database through its generated user Secret.
 
-- HelmRelease: `cluster-components/langfuse/helmrelease.yaml`
+- Portable resources: `cluster-components/langfuse/base` and `cluster-components/langfuse-postgres/base`
+- Minikube settings: `cluster-components/langfuse/overlays/minikube` and `cluster-components/langfuse-postgres/overlays/minikube`
+- HelmRelease: `cluster-components/langfuse/base/helmrelease.yaml`
+- PostgresCluster: `cluster-components/langfuse-postgres/base/postgres-cluster.yaml`
 - Ingress host: `https://langfuse.local`
 - ClickHouse operator: `cluster-components/clickhouse-operator/helmrelease.yaml`
+
+Future clusters should add their own overlays for storage classes, resource sizing, ingress, TLS, and backup repositories without changing the shared bases.
 
 ## Bootstrap commands for Minikube + Flux
 

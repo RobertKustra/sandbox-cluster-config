@@ -1,0 +1,35 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-langfuse-postgres
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: minikube-postgres-operator
+    - name: minikube-langfuse-namespace
+  interval: 10m
+  path: ./cluster-components/langfuse-postgres/overlays/minikube
+  prune: true
+  wait: true
+  healthCheckExprs:
+    - apiVersion: postgres-operator.crunchydata.com/v1beta1
+      kind: PostgresCluster
+      current: >-
+        has(status.instances) && status.instances.size() > 0 &&
+        status.instances.all(instance,
+          has(instance.readyReplicas) &&
+          instance.readyReplicas == instance.replicas)
+      inProgress: >-
+        !has(status.instances) || status.instances.size() == 0 ||
+        status.instances.exists(instance,
+          !has(instance.readyReplicas) ||
+          instance.readyReplicas != instance.replicas)
+      failed: "false"
+  timeout: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substitute:
+      cluster: minikube
+      environment: langfuse

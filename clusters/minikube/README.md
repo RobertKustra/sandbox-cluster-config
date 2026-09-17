@@ -10,6 +10,8 @@ This folder contains the isolated Flux entrypoints for the Minikube cluster.
 - environments/prod.yaml - Flux Kustomization for the prod environment
 - ../../cluster-components/monitoring.yaml - Flux Kustomization for the monitoring environment
 - ../../cluster-components/llm.yaml - Flux Kustomization for the llm environment
+- ../../cluster-components/langfuse-namespace.yaml - Flux Kustomization for the Langfuse namespace
+- ../../cluster-components/langfuse-postgres.yaml - Flux Kustomization for the Crunchy-managed Langfuse database
 - ../../cluster-components/langfuse.yaml - Flux Kustomization for Langfuse
 - ../../cluster-components/clickhouse-operator.yaml - Flux Kustomization for the ClickHouse operator
 - ../../cluster-components/traefik.yaml - Flux Kustomization for the Traefik ingress controller
@@ -156,6 +158,8 @@ flux reconcile kustomization minikube-test -n flux-system --with-source
 flux reconcile kustomization minikube-prod -n flux-system --with-source
 flux reconcile kustomization minikube-traefik -n flux-system --with-source
 flux reconcile kustomization minikube-clickhouse-operator -n flux-system --with-source
+flux reconcile kustomization minikube-langfuse-namespace -n flux-system --with-source
+flux reconcile kustomization minikube-langfuse-postgres -n flux-system --with-source
 flux reconcile kustomization minikube-langfuse -n flux-system --with-source
 kubectl get postgresclusters.postgres-operator.crunchydata.com -A
 kubectl get pods -n postgres-operator

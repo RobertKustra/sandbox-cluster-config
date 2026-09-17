@@ -1,0 +1,15 @@
+- op: replace
+  path: /spec/instances/0/dataVolumeClaimSpec/resources/requests/storage
+  value: 5Gi
+- op: add
+  path: /spec/instances/0/dataVolumeClaimSpec/storageClassName
+  value: csi-hostpath-sc
+- op: add
+  path: /spec/instances/0/resources
+  value:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
