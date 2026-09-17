@@ -4,6 +4,9 @@ metadata:
   name: langfuse-postgres
 spec:
   postgresVersion: 16
+  databaseInitSQL:
+    name: langfuse-postgres-init
+    key: init.sql
   users:
     - name: langfuse
       databases:

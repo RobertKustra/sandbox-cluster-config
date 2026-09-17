@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: langfuse-postgres-init
+data:
+  init.sql: |
+    \connect langfuse
+    GRANT USAGE, CREATE ON SCHEMA public TO langfuse;
+    ALTER SCHEMA public OWNER TO langfuse;
