@@ -15,6 +15,8 @@ sandbox-cluster-config/
 |-- cluster-components/            # Shared, cluster-level Flux stages and packages
 |   |-- cert-manager/
 |   |-- cert-manager-issuers/
+|   |-- clickhouse-operator/
+|   |-- langfuse/
 |   |-- llm/
 |   |-- monitoring/
 |   `-- traefik/
@@ -148,6 +150,14 @@ The LLM environment deploys `sandbox-vllm` from the `charts/sandbox-vllm` chart.
 - HelmRelease: `cluster-components/llm/sandbox-vllm.yaml`
 - Ingress host: `sandbox-vllm.llm.local`
 - Smoke test: Helm hook Job executed after install and upgrade
+
+## Langfuse deployment
+
+The Langfuse component deploys `sandbox-langfuse` from the local chart repository. It waits for cert-manager, Traefik, and the ClickHouse operator before installing Langfuse and its data stores.
+
+- HelmRelease: `cluster-components/langfuse/helmrelease.yaml`
+- Ingress host: `https://langfuse.local`
+- ClickHouse operator: `cluster-components/clickhouse-operator/helmrelease.yaml`
 
 ## Bootstrap commands for Minikube + Flux
 

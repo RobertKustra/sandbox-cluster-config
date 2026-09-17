@@ -1,0 +1,22 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: langfuse
+  namespace: langfuse
+spec:
+  interval: 5m
+  timeout: 15m0s
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: charts/sandbox-langfuse
+      version: "0.1.0"
+      sourceRef:
+        kind: GitRepository
+        name: sandbox-helm-charts
+        namespace: flux-system
