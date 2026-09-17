@@ -12,6 +12,8 @@ Shared cluster components live in `cluster-components`:
 
 - monitoring.yaml for the monitoring environment
 - llm.yaml for the llm environment
+- clickhouse-operator.yaml for the ClickHouse operator required by Langfuse
+- langfuse.yaml for the Langfuse observability platform
 - traefik.yaml for the Traefik ingress controller
 - operators-postgres.yaml for PostgreSQL operator resources
 
