@@ -41,3 +41,14 @@ metadata:
 spec:
   interval: 1h
   url: https://charts.external-secrets.io
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: clickhouse-operator
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: oci://ghcr.io/clickhouse/clickhouse-operator-helm
+  ref:
+    tag: 0.0.5
