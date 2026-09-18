@@ -14,5 +14,15 @@ spec:
         namespace: flux-system
   values:
     pvcs:
-      - name: sandbox-vllm-model-cache
-        claimName: sandbox-vllm-model-cache
+      - name: clickhouse-storage-volume-langfuse-clickhouse-0-0-0
+        claimName: clickhouse-storage-volume-langfuse-clickhouse-0-0-0
+      - name: clickhouse-storage-volume-langfuse-keeper-0-0
+        claimName: clickhouse-storage-volume-langfuse-keeper-0-0
+      - name: langfuse-postgres-instance1-vg5g-pgdata
+        claimName: langfuse-postgres-instance1-vg5g-pgdata
+      - name: langfuse-postgres-repo1
+        claimName: langfuse-postgres-repo1
+      - name: langfuse-redis
+        claimName: langfuse-redis
+      - name: langfuse-s3-all-in-one-data
+        claimName: langfuse-s3-all-in-one-data
