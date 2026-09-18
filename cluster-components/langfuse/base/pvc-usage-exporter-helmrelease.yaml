@@ -18,8 +18,8 @@ spec:
         claimName: clickhouse-storage-volume-langfuse-clickhouse-0-0-0
       - name: clickhouse-storage-volume-langfuse-keeper-0-0
         claimName: clickhouse-storage-volume-langfuse-keeper-0-0
-      - name: langfuse-postgres-instance1-vg5g-pgdata
-        claimName: langfuse-postgres-instance1-vg5g-pgdata
+      - name: langfuse-postgres-instance1-6k4d-pgdata
+        claimName: langfuse-postgres-instance1-6k4d-pgdata
       - name: langfuse-postgres-repo1
         claimName: langfuse-postgres-repo1
       - name: langfuse-redis
