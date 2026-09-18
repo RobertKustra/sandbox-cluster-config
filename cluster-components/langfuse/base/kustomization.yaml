@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: langfuse
 resources:
   - ./helmrelease.yaml
+  - ./pvc-usage-exporter-helmrelease.yaml
