@@ -1171,3 +1171,120 @@ dashboards:
           "version": 1,
           "weekStart": ""
         }
+    postgres-backups:
+      json: |
+        {
+          "annotations": {"list": []},
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 1,
+          "panels": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "short", "min": 0, "max": 1, "color": {"mode": "thresholds"}, "mappings": [{"options": {"0": {"color": "red", "text": "ERROR"}, "1": {"color": "green", "text": "OK"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+              "gridPos": {"h": 7, "w": 6, "x": 0, "y": 0},
+              "id": 71,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+              "targets": [{"expr": "pgbackrest_repository_status{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}}", "refId": "A"}],
+              "title": "Repository Status",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "s", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 86400}, {"color": "red", "value": 172800}]}}, "overrides": []},
+              "gridPos": {"h": 7, "w": 6, "x": 6, "y": 0},
+              "id": 72,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+              "targets": [{"expr": "time() - pgbackrest_last_backup_timestamp_seconds{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}} ({{type}})", "refId": "A"}],
+              "title": "Last Backup Age",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "s", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 600}]}}, "overrides": []},
+              "gridPos": {"h": 7, "w": 6, "x": 12, "y": 0},
+              "id": 73,
+              "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+              "targets": [{"expr": "pgbackrest_last_backup_duration_seconds{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}}", "refId": "A"}],
+              "title": "Last Backup Duration",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "s", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 600}, {"color": "red", "value": 900}]}}, "overrides": []},
+              "gridPos": {"h": 7, "w": 6, "x": 18, "y": 0},
+              "id": 74,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+              "targets": [{"expr": "time() - push_time_seconds{job=\"pgbackrest\",namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}}", "refId": "A"}],
+              "title": "Collector Age",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "bytes", "color": {"mode": "palette-classic"}}, "overrides": []},
+              "gridPos": {"h": 9, "w": 8, "x": 0, "y": 7},
+              "id": 75,
+              "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
+              "targets": [{"expr": "pgbackrest_last_backup_size_bytes{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}} logical", "refId": "A"}, {"expr": "pgbackrest_last_backup_repository_size_bytes{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}} repository", "refId": "B"}],
+              "title": "Last Backup Size",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "palette-classic"}}, "overrides": []},
+              "gridPos": {"h": 9, "w": 8, "x": 8, "y": 7},
+              "id": 76,
+              "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
+              "targets": [{"expr": "pgbackrest_backup_count{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}} / {{type}}", "refId": "A"}],
+              "title": "Backups in Repository",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []},
+              "gridPos": {"h": 9, "w": 8, "x": 16, "y": 7},
+              "id": 77,
+              "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+              "targets": [{"expr": "sum by (namespace) (kube_job_status_failed{namespace=~\"$namespace\",job_name=~\".*-backup-.*\"})", "legendFormat": "{{namespace}}", "refId": "A"}],
+              "title": "Failed Backup Jobs",
+              "type": "stat"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "dateTimeFromNow", "color": {"mode": "palette-classic"}}, "overrides": []},
+              "gridPos": {"h": 9, "w": 12, "x": 0, "y": 16},
+              "id": 78,
+              "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "asc"}},
+              "targets": [{"expr": "kube_cronjob_next_schedule_time{namespace=~\"$namespace\",cronjob=~\".*-repo1-(full|incr)\"} * 1000", "legendFormat": "{{namespace}} / {{cronjob}}", "refId": "A"}],
+              "title": "Next Scheduled Backups",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 75}, {"color": "red", "value": 90}]}}, "overrides": []},
+              "gridPos": {"h": 9, "w": 12, "x": 12, "y": 16},
+              "id": 79,
+              "options": {"displayMode": "gradient", "minVizHeight": 10, "minVizWidth": 0, "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showUnfilled": true, "valueMode": "color"},
+              "targets": [{"expr": "100 * kubelet_volume_stats_used_bytes{namespace=~\"$namespace\",persistentvolumeclaim=~\".*-repo1\"} / kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\",persistentvolumeclaim=~\".*-repo1\"}", "legendFormat": "{{namespace}} / {{persistentvolumeclaim}}", "refId": "A"}],
+              "title": "Backup Repository PVC Usage",
+              "type": "bargauge"
+            }
+          ],
+          "refresh": "1m",
+          "schemaVersion": 39,
+          "style": "dark",
+          "tags": ["postgresql", "pgbackrest", "backup"],
+          "templating": {
+            "list": [
+              {"allValue": ".*", "current": {"selected": true, "text": "All", "value": "$__all"}, "datasource": {"type": "prometheus", "uid": "prometheus"}, "definition": "label_values(pgbackrest_repository_status, namespace)", "hide": 0, "includeAll": true, "label": "Namespace", "multi": true, "name": "namespace", "options": [], "query": {"query": "label_values(pgbackrest_repository_status, namespace)", "refId": "PrometheusVariableQueryEditor-VariableQuery"}, "refresh": 1, "regex": "", "skipUrlSync": false, "sort": 1, "type": "query"},
+              {"allValue": ".*", "current": {"selected": true, "text": "All", "value": "$__all"}, "datasource": {"type": "prometheus", "uid": "prometheus"}, "definition": "label_values(pgbackrest_repository_status{namespace=~\"$namespace\"}, cluster)", "hide": 0, "includeAll": true, "label": "Cluster", "multi": true, "name": "cluster", "options": [], "query": {"query": "label_values(pgbackrest_repository_status{namespace=~\"$namespace\"}, cluster)", "refId": "PrometheusVariableQueryEditor-VariableQuery"}, "refresh": 1, "regex": "", "skipUrlSync": false, "sort": 1, "type": "query"}
+            ]
+          },
+          "time": {"from": "now-7d", "to": "now"},
+          "timepicker": {},
+          "timezone": "",
+          "title": "PostgreSQL Backups",
+          "uid": "postgresql-backups",
+          "version": 1,
+          "weekStart": ""
+        }
