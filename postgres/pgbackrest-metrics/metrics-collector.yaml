@@ -60,6 +60,7 @@ data:
       ' > "$metrics_file"
 
       curl --fail --silent --show-error \
+        --request PUT \
         --data-binary "@$metrics_file" \
         "$PUSHGATEWAY_URL/metrics/job/pgbackrest/namespace/$POD_NAMESPACE/cluster/$cluster"
       rm -f "$metrics_file"
