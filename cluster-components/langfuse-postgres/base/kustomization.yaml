@@ -4,3 +4,5 @@ namespace: langfuse
 resources:
   - ./database-init.yaml
   - ./postgres-cluster.yaml
+components:
+  - ../../../postgres/pgbackrest-metrics
