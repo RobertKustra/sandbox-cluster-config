@@ -1,0 +1,123 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pgbackrest-metrics
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pgbackrest-metrics
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pgbackrest-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pgbackrest-metrics
+subjects:
+  - kind: ServiceAccount
+    name: pgbackrest-metrics
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbackrest-metrics-script
+data:
+  collect.sh: |
+    #!/bin/sh
+    set -eu
+
+    selector='postgres-operator.crunchydata.com/data=pgbackrest'
+    pods="$(kubectl get pods -l "$selector" -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')"
+
+    for pod in $pods; do
+      cluster="$(kubectl get pod "$pod" -o jsonpath='{.metadata.labels.postgres-operator\.crunchydata\.com/cluster}')"
+      info="$(kubectl exec "$pod" -c pgbackrest -- pgbackrest info --output=json)"
+      metrics_file="$(mktemp)"
+
+      echo "$info" | jq -r '
+        .[] as $stanza |
+        "pgbackrest_repository_status{stanza=\"\($stanza.name)\"} \(if $stanza.status.code == 0 then 1 else 0 end)",
+        (["full", "diff", "incr"][] as $type |
+          "pgbackrest_backup_count{stanza=\"\($stanza.name)\",type=\"\($type)\"} \([$stanza.backup[]? | select(.type == $type)] | length)"),
+        ($stanza.backup | sort_by(.timestamp.stop) | last) as $backup |
+        if $backup then
+          "pgbackrest_last_backup_timestamp_seconds{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \($backup.timestamp.stop)",
+          "pgbackrest_last_backup_duration_seconds{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \($backup.timestamp.stop - $backup.timestamp.start)",
+          "pgbackrest_last_backup_size_bytes{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \($backup.info.size)",
+          "pgbackrest_last_backup_repository_size_bytes{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \($backup.info.repository.size)",
+          "pgbackrest_last_backup_error{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \(if $backup.error then 1 else 0 end)"
+        else empty end
+      ' > "$metrics_file"
+
+      curl --fail --silent --show-error \
+        --data-binary "@$metrics_file" \
+        "$PUSHGATEWAY_URL/metrics/job/pgbackrest/namespace/$POD_NAMESPACE/cluster/$cluster"
+      rm -f "$metrics_file"
+    done
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pgbackrest-metrics
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: pgbackrest-metrics
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: collector
+              image: alpine/k8s:1.34.1
+              command: ["/scripts/collect.sh"]
+              env:
+                - name: POD_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: PUSHGATEWAY_URL
+                  value: http://prometheus-prometheus-pushgateway.monitoring.svc:9091
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: script
+              configMap:
+                name: pgbackrest-metrics-script
+                defaultMode: 0555
+            - name: tmp
+              emptyDir: {}
