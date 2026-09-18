@@ -1235,7 +1235,7 @@ dashboards:
               "gridPos": {"h": 9, "w": 8, "x": 8, "y": 7},
               "id": 76,
               "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "desc"}},
-              "targets": [{"expr": "pgbackrest_backup_count{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}} / {{type}}", "refId": "A"}],
+              "targets": [{"expr": "pgbackrest_backups{namespace=~\"$namespace\",cluster=~\"$cluster\"}", "legendFormat": "{{namespace}} / {{cluster}} / {{type}}", "refId": "A"}],
               "title": "Backups in Repository",
               "type": "timeseries"
             },

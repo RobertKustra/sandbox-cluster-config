@@ -47,8 +47,8 @@ data:
       cat > "$metrics_file" <<'EOF'
     # HELP pgbackrest_repository_status Whether the pgBackRest repository reports an OK status.
     # TYPE pgbackrest_repository_status gauge
-    # HELP pgbackrest_backup_count Number of backups currently stored by type.
-    # TYPE pgbackrest_backup_count gauge
+    # HELP pgbackrest_backups Number of backups currently stored by type.
+    # TYPE pgbackrest_backups gauge
     # HELP pgbackrest_last_backup_timestamp_seconds Unix timestamp of the latest completed backup.
     # TYPE pgbackrest_last_backup_timestamp_seconds gauge
     # HELP pgbackrest_last_backup_duration_seconds Duration of the latest completed backup.
@@ -65,7 +65,7 @@ data:
         .[] as $stanza |
         "pgbackrest_repository_status{stanza=\"\($stanza.name)\"} \(if $stanza.status.code == 0 then 1 else 0 end)",
         (["full", "diff", "incr"][] as $type |
-          "pgbackrest_backup_count{stanza=\"\($stanza.name)\",type=\"\($type)\"} \([$stanza.backup[]? | select(.type == $type)] | length)"),
+          "pgbackrest_backups{stanza=\"\($stanza.name)\",type=\"\($type)\"} \([$stanza.backup[]? | select(.type == $type)] | length)"),
         ($stanza.backup | sort_by(.timestamp.stop) | last) as $backup |
         if $backup then
           "pgbackrest_last_backup_timestamp_seconds{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \($backup.timestamp.stop)",
