@@ -44,6 +44,23 @@ data:
       info="$(kubectl exec "$pod" -c pgbackrest -- pgbackrest info --output=json)"
       metrics_file="$(mktemp)"
 
+      cat > "$metrics_file" <<'EOF'
+    # HELP pgbackrest_repository_status Whether the pgBackRest repository reports an OK status.
+    # TYPE pgbackrest_repository_status gauge
+    # HELP pgbackrest_backup_count Number of backups currently stored by type.
+    # TYPE pgbackrest_backup_count gauge
+    # HELP pgbackrest_last_backup_timestamp_seconds Unix timestamp of the latest completed backup.
+    # TYPE pgbackrest_last_backup_timestamp_seconds gauge
+    # HELP pgbackrest_last_backup_duration_seconds Duration of the latest completed backup.
+    # TYPE pgbackrest_last_backup_duration_seconds gauge
+    # HELP pgbackrest_last_backup_size_bytes Logical size of the latest completed backup.
+    # TYPE pgbackrest_last_backup_size_bytes gauge
+    # HELP pgbackrest_last_backup_repository_size_bytes Repository size of the latest completed backup.
+    # TYPE pgbackrest_last_backup_repository_size_bytes gauge
+    # HELP pgbackrest_last_backup_error Whether the latest backup reports an error.
+    # TYPE pgbackrest_last_backup_error gauge
+    EOF
+
       echo "$info" | jq -r '
         .[] as $stanza |
         "pgbackrest_repository_status{stanza=\"\($stanza.name)\"} \(if $stanza.status.code == 0 then 1 else 0 end)",
@@ -57,7 +74,7 @@ data:
           "pgbackrest_last_backup_repository_size_bytes{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \($backup.info.repository.size)",
           "pgbackrest_last_backup_error{stanza=\"\($stanza.name)\",type=\"\($backup.type)\"} \(if $backup.error then 1 else 0 end)"
         else empty end
-      ' > "$metrics_file"
+      ' >> "$metrics_file"
 
       curl --fail --silent --show-error \
         --request PUT \
