@@ -13,3 +13,6 @@
     limits:
       cpu: 500m
       memory: 512Mi
+- op: add
+  path: /spec/backups/pgbackrest/repos/0/volume/volumeClaimSpec/storageClassName
+  value: csi-hostpath-sc
