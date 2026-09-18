@@ -20,3 +20,19 @@ spec:
         resources:
           requests:
             storage: 20Gi
+  backups:
+    pgbackrest:
+      global:
+        repo1-retention-full: "2"
+      repos:
+        - name: repo1
+          schedules:
+            full: "0 2 * * 0"
+            incremental: "0 2 * * 1-6"
+          volume:
+            volumeClaimSpec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 10Gi
