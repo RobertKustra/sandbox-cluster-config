@@ -7,22 +7,25 @@ spec:
   chart:
     spec:
       chart: charts/pvc-usage-exporter
-      version: "0.1.2"
+      version: "0.1.3"
       sourceRef:
         kind: GitRepository
         name: sandbox-helm-charts
         namespace: flux-system
   values:
-    pvcs:
-      - name: clickhouse-storage-volume-langfuse-clickhouse-0-0-0
-        claimName: clickhouse-storage-volume-langfuse-clickhouse-0-0-0
-      - name: clickhouse-storage-volume-langfuse-keeper-0-0
-        claimName: clickhouse-storage-volume-langfuse-keeper-0-0
-      - name: langfuse-postgres-instance1-6k4d-pgdata
-        claimName: langfuse-postgres-instance1-6k4d-pgdata
-      - name: langfuse-postgres-repo1
-        claimName: langfuse-postgres-repo1
-      - name: langfuse-redis
-        claimName: langfuse-redis
-      - name: langfuse-s3-all-in-one-data
-        claimName: langfuse-s3-all-in-one-data
+    pvcSelectors:
+      - matchLabels:
+          app: langfuse-clickhouse
+      - matchLabels:
+          app: langfuse-keeper
+      - matchLabels:
+          postgres-operator.crunchydata.com/cluster: langfuse-postgres
+          postgres-operator.crunchydata.com/instance-set: instance1
+          postgres-operator.crunchydata.com/role: pgdata
+      - matchLabels:
+          postgres-operator.crunchydata.com/cluster: langfuse-postgres
+          postgres-operator.crunchydata.com/data: pgbackrest
+      - matchLabels:
+          app.kubernetes.io/name: redis
+      - matchLabels:
+          app.kubernetes.io/component: seaweedfs-all-in-one
