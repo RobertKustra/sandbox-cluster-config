@@ -11,7 +11,7 @@ spec:
   git:
     checkout:
       ref:
-        branch: development
+        branch: feat/base-overlays-env-values
     commit:
       author:
         email: fluxcdbot@users.noreply.github.com
@@ -25,7 +25,7 @@ spec:
         - {{ $file }}
         {{- end }}
     push:
-      branch: development
+      branch: feat/base-overlays-env-values
   update:
     path: ./overlays/dev
     strategy: Setters

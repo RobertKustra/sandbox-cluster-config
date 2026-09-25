@@ -20,7 +20,7 @@ spec:
   interval: 1m
   url: ssh://git@github.com/RobertKustra/sandbox-env-values.git
   ref:
-    branch: development
+    branch: feat/base-overlays-env-values
   secretRef:
     name: sandbox-env-values-write
 ---
