@@ -10,14 +10,14 @@ This folder contains the isolated Flux entrypoints for the Minikube cluster.
 - environments/prod.yaml - Flux Kustomization for the prod environment
 - ../../cluster-components/monitoring.yaml - Flux Kustomization for the monitoring environment
 - ../../cluster-components/llm.yaml - Flux Kustomization for the llm environment
-- ../../cluster-components/langfuse-namespace.yaml - Flux Kustomization for the Langfuse namespace
+- ../../cluster-components/namespaces.yaml - Flux Kustomizations for all platform and application namespaces
 - ../../cluster-components/langfuse-postgres.yaml - Flux Kustomization for the Crunchy-managed Langfuse database
 - ../../cluster-components/langfuse.yaml - Flux Kustomization for Langfuse
 - ../../cluster-components/clickhouse-operator.yaml - Flux Kustomization for the ClickHouse operator
 - ../../cluster-components/traefik.yaml - Flux Kustomization for the Traefik ingress controller
 - ../../cluster-components/operators-postgres.yaml - Flux Kustomization for PostgreSQL operator resources
 
-Environments are isolated so changes in one environment do not affect the others directly. The `sandbox-namespace-<env>` stages create the `dev`, `test`, and `prod` namespaces. Per-application values stages depend on the matching namespace stage, and workload Kustomizations depend on all values stages they consume.
+Environments are isolated so changes in one environment do not affect the others directly. The `minikube-namespace-<name>` stages own all Namespace manifests centrally. Per-application values stages depend on the matching namespace stage, and workload Kustomizations depend on all values stages they consume.
 
 ## PostgreSQL environments
 
@@ -128,7 +128,7 @@ make run CONFIG_FILE=/workspace/sandbox-scaffolder/cluster-config.yaml HOST_REPO
 
 The scaffold command will:
 
-- create `sandbox-env-values/namespaces/overlays/<env>` and per-service `sandbox-env-values/<service>/overlays/<env>` paths
+- create `sandbox-cluster-config/namespaces/overlays/<env>` and per-service `sandbox-env-values/<service>/overlays/<env>` paths
 - create `clusters/minikube/environments/<env>.yaml` from `templates/scaffold/minikube-environment.yaml`
 - add a commented `./environments/<env>.yaml` entry to `clusters/minikube/kustomization.yaml`
 - regenerate `clusters/minikube/flux-system/env-values-kustomizations.yaml`
@@ -158,7 +158,7 @@ flux reconcile kustomization minikube-test -n flux-system --with-source
 flux reconcile kustomization minikube-prod -n flux-system --with-source
 flux reconcile kustomization minikube-traefik -n flux-system --with-source
 flux reconcile kustomization minikube-clickhouse-operator -n flux-system --with-source
-flux reconcile kustomization minikube-langfuse-namespace -n flux-system --with-source
+flux reconcile kustomization minikube-namespace-langfuse -n flux-system --with-source
 flux reconcile kustomization minikube-langfuse-postgres -n flux-system --with-source
 flux reconcile kustomization minikube-langfuse -n flux-system --with-source
 kubectl get postgresclusters.postgres-operator.crunchydata.com -A

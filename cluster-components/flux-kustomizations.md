@@ -10,10 +10,10 @@ Environment manifests live in `clusters/minikube/environments`:
 
 Shared cluster components live in `cluster-components`:
 
+- namespaces.yaml for all platform and application namespaces
 - monitoring.yaml for the monitoring environment
 - llm.yaml for the llm environment
 - clickhouse-operator.yaml for the ClickHouse operator required by Langfuse
-- langfuse-namespace.yaml for the shared Langfuse namespace
 - langfuse-postgres.yaml for the Crunchy-managed Langfuse database
 - langfuse.yaml for the Langfuse observability platform
 - traefik.yaml for the Traefik ingress controller
