@@ -4,6 +4,8 @@ metadata:
   name: minikube-cert-manager
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: minikube-namespace-cert-manager
   interval: 10m
   retryInterval: 1m
   path: ./cluster-components/cert-manager

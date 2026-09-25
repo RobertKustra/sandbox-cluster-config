@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
+    - name: minikube-namespace-clickhouse-operator
     - name: minikube-cert-manager
   interval: 10m
   path: ./cluster-components/clickhouse-operator

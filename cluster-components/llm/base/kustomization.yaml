@@ -2,7 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: llm
 resources:
-  - ./namespace.yaml
   - ./sandbox-vllm.yaml
   - ./sandbox-vllm-ingress.yaml
   - ./pvc-usage-exporter-helmrelease.yaml

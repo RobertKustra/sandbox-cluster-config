@@ -1,0 +1,139 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-cert-manager
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/cert-manager
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-clickhouse-operator
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/clickhouse-operator
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-langfuse
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/langfuse
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-llm
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/llm
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-monitoring
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/monitoring
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-postgres-operator
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/postgres-operator
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-traefik
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/traefik
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-dev
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/dev
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-test
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/test
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minikube-namespace-prod
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./namespaces/overlays/prod
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system

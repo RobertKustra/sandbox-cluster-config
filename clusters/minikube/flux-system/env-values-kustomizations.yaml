@@ -1,27 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: sandbox-namespace-dev
-  namespace: flux-system
-spec:
-  interval: 5m
-  sourceRef:
-    kind: GitRepository
-    name: sandbox-env-values
-    namespace: flux-system
-  path: ./namespaces/overlays/dev
-  prune: true
-  wait: true
-  timeout: 5m0s
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: sandbox-nginx-values-dev
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-dev
+    - name: minikube-namespace-dev
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -39,7 +23,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-dev
+    - name: minikube-namespace-dev
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -57,7 +41,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-dev
+    - name: minikube-namespace-dev
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -71,27 +55,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: sandbox-namespace-test
-  namespace: flux-system
-spec:
-  interval: 5m
-  sourceRef:
-    kind: GitRepository
-    name: sandbox-env-values
-    namespace: flux-system
-  path: ./namespaces/overlays/test
-  prune: true
-  wait: true
-  timeout: 5m0s
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: sandbox-nginx-values-test
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-test
+    - name: minikube-namespace-test
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -109,7 +77,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-test
+    - name: minikube-namespace-test
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -127,7 +95,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-test
+    - name: minikube-namespace-test
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -141,27 +109,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: sandbox-namespace-prod
-  namespace: flux-system
-spec:
-  interval: 5m
-  sourceRef:
-    kind: GitRepository
-    name: sandbox-env-values
-    namespace: flux-system
-  path: ./namespaces/overlays/prod
-  prune: true
-  wait: true
-  timeout: 5m0s
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: sandbox-nginx-values-prod
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-prod
+    - name: minikube-namespace-prod
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -179,7 +131,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-prod
+    - name: minikube-namespace-prod
   interval: 5m
   sourceRef:
     kind: GitRepository
@@ -197,7 +149,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: sandbox-namespace-prod
+    - name: minikube-namespace-prod
   interval: 5m
   sourceRef:
     kind: GitRepository

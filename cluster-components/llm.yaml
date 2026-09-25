@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
+    - name: minikube-namespace-llm
     - name: minikube-postgres-operator
     - name: minikube-cert-manager-issuers
     - name: minikube-monitoring

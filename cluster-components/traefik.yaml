@@ -4,6 +4,8 @@ metadata:
   name: minikube-traefik
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: minikube-namespace-traefik
   interval: 10m
   path: ./cluster-components/traefik
   prune: true

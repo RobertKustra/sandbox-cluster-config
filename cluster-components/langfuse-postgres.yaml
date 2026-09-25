@@ -6,7 +6,7 @@ metadata:
 spec:
   dependsOn:
     - name: minikube-postgres-operator
-    - name: minikube-langfuse-namespace
+    - name: minikube-namespace-langfuse
   interval: 10m
   path: ./cluster-components/langfuse-postgres/overlays/minikube
   prune: true

@@ -4,6 +4,8 @@ metadata:
   name: minikube-postgres-operator
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: minikube-namespace-postgres-operator
   interval: 10m
   path: ./utils/operators/postgres/crunchy
   prune: true
