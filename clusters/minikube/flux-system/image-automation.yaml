@@ -27,5 +27,5 @@ spec:
     push:
       branch: feat/base-overlays-env-values
   update:
-    path: ./overlays/dev
+    path: ./sandbox-ai-consumer/overlays/dev
     strategy: Setters

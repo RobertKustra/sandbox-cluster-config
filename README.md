@@ -65,9 +65,10 @@ If you previously used local paths under `scripts/scaffold_envs`, replace them w
 
 1. Flux reads the GitRepository sources from this repository.
 2. Cluster components include their own namespace manifests in their local component directories when needed.
-3. The `sandbox-env-values-<env>` stages generate ConfigMaps and create the matching environment namespaces (`dev`, `test`, `prod`).
-4. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads after the matching `sandbox-env-values-<env>` dependency succeeds and wait for HelmRelease health checks.
-5. The cluster entrypoint references only the environments and shared components that should exist on that cluster.
+3. The `sandbox-namespace-<env>` stages create the environment namespaces (`dev`, `test`, `prod`).
+4. The `sandbox-<service>-values-<env>` stages depend on the matching namespace stage and generate application ConfigMaps.
+5. Environment stages (`minikube-dev`, `minikube-test`, `minikube-prod`) deploy workloads after all required values stages succeed and wait for HelmRelease health checks.
+6. The cluster entrypoint references only the environments and shared components that should exist on that cluster.
 
 ## Environment scaffold and sync
 
@@ -75,7 +76,7 @@ If you previously used local paths under `scripts/scaffold_envs`, replace them w
 
 Scaffold operations are managed in the separate `sandbox-scaffolder` repository (Docker + Make workflow).
 
-Regenerate Flux `sandbox-env-values-<env>` manifests from currently enabled entries:
+Regenerate Flux namespace and application values manifests from currently enabled entries:
 
 ```bash
 cd ../sandbox-scaffolder
@@ -135,8 +136,8 @@ The YAML-driven scaffold command will:
 
 - update `clusters/<cluster>/environments/<env>/kustomization.yaml` from the declared service list
 - update `clusters/<cluster>/environments/<env>.yaml` with health checks only for selected Helm-based services
-- update `sandbox-env-values/overlays/<env>/kustomization.yaml` and `namespace.yaml`
-- create missing per-service values files in `sandbox-env-values/overlays/<env>/` and update managed `image` blocks from the declared service tags
+- update `sandbox-env-values/namespaces/overlays/<env>/kustomization.yaml`
+- create missing values files in `sandbox-env-values/<service>/overlays/<env>/` and update managed `image` blocks from the declared service tags
 - regenerate `clusters/<cluster>/flux-system/env-values-kustomizations.yaml`
 - regenerate `clusters/<cluster>/flux-system/image-automation.yaml` only for environments that enable `image_updater` and only for services that support image automation; `sandbox-ai-consumer` uses the configured `image_repository_prefix`
 - add or remove the `image-automation.yaml` reference in `clusters/<cluster>/flux-system/kustomization.yaml`
@@ -368,10 +369,13 @@ flux reconcile kustomization minikube-dev -n flux-system --with-source
 flux reconcile kustomization minikube-test -n flux-system --with-source
 flux reconcile kustomization minikube-prod -n flux-system --with-source
 
-# Optional per-environment values overlays
-flux reconcile kustomization sandbox-env-values-dev -n flux-system --with-source
-flux reconcile kustomization sandbox-env-values-test -n flux-system --with-source
-flux reconcile kustomization sandbox-env-values-prod -n flux-system --with-source
+# Namespace and application values stages
+for env in dev test prod; do
+  flux reconcile kustomization "sandbox-namespace-${env}" -n flux-system --with-source
+  for service in sandbox-nginx sandbox-redis sandbox-ai-consumer; do
+    flux reconcile kustomization "${service}-values-${env}" -n flux-system --with-source
+  done
+done
 ```
 
 ### Troubleshooting when changes are not applied

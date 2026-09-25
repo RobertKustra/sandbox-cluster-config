@@ -17,7 +17,7 @@ This folder contains the isolated Flux entrypoints for the Minikube cluster.
 - ../../cluster-components/traefik.yaml - Flux Kustomization for the Traefik ingress controller
 - ../../cluster-components/operators-postgres.yaml - Flux Kustomization for PostgreSQL operator resources
 
-Environments are isolated so changes in one environment do not affect the others directly. The `sandbox-env-values-<env>` stages create the `dev`, `test`, and `prod` namespaces before the matching workload Kustomizations reconcile, while shared cluster components still own their namespace manifests locally.
+Environments are isolated so changes in one environment do not affect the others directly. The `sandbox-namespace-<env>` stages create the `dev`, `test`, and `prod` namespaces. Per-application values stages depend on the matching namespace stage, and workload Kustomizations depend on all values stages they consume.
 
 ## PostgreSQL environments
 
@@ -112,7 +112,7 @@ Migration note: scaffold tooling was moved to the separate `sandbox-scaffolder` 
 
 `clusters/minikube/kustomization.yaml` is the source of truth for which environments are active on this cluster.
 
-Use the helper script to keep Flux `sandbox-env-values-<env>` manifests in sync with enabled environment entries:
+Use the helper script to keep Flux namespace and application values manifests in sync with enabled environment entries:
 
 ```bash
 cd ../sandbox-scaffolder
@@ -128,7 +128,7 @@ make run CONFIG_FILE=/workspace/sandbox-scaffolder/cluster-config.yaml HOST_REPO
 
 The scaffold command will:
 
-- create `sandbox-env-values/overlays/<env>` from template files in `templates/scaffold/env-values-overlay/`
+- create `sandbox-env-values/namespaces/overlays/<env>` and per-service `sandbox-env-values/<service>/overlays/<env>` paths
 - create `clusters/minikube/environments/<env>.yaml` from `templates/scaffold/minikube-environment.yaml`
 - add a commented `./environments/<env>.yaml` entry to `clusters/minikube/kustomization.yaml`
 - regenerate `clusters/minikube/flux-system/env-values-kustomizations.yaml`
