@@ -1,7 +1,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: sandbox-env-values-dev
+  name: sandbox-namespace-dev
   namespace: flux-system
 spec:
   interval: 5m
@@ -9,7 +9,7 @@ spec:
     kind: GitRepository
     name: sandbox-env-values
     namespace: flux-system
-  path: ./overlays/dev
+  path: ./namespaces/overlays/dev
   prune: true
   wait: true
   timeout: 5m0s
@@ -17,15 +17,17 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: sandbox-env-values-test
+  name: sandbox-nginx-values-dev
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: sandbox-namespace-dev
   interval: 5m
   sourceRef:
     kind: GitRepository
     name: sandbox-env-values
     namespace: flux-system
-  path: ./overlays/test
+  path: ./sandbox-nginx/overlays/dev
   prune: true
   wait: true
   timeout: 5m0s
@@ -33,7 +35,43 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: sandbox-env-values-prod
+  name: sandbox-redis-values-dev
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-dev
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-redis/overlays/dev
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-ai-consumer-values-dev
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-dev
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-ai-consumer/overlays/dev
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-namespace-test
   namespace: flux-system
 spec:
   interval: 5m
@@ -41,7 +79,131 @@ spec:
     kind: GitRepository
     name: sandbox-env-values
     namespace: flux-system
-  path: ./overlays/prod
+  path: ./namespaces/overlays/test
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-nginx-values-test
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-test
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-nginx/overlays/test
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-redis-values-test
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-test
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-redis/overlays/test
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-ai-consumer-values-test
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-test
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-ai-consumer/overlays/test
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-namespace-prod
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./namespaces/overlays/prod
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-nginx-values-prod
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-prod
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-nginx/overlays/prod
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-redis-values-prod
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-prod
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-redis/overlays/prod
+  prune: true
+  wait: true
+  timeout: 5m0s
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: sandbox-ai-consumer-values-prod
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: sandbox-namespace-prod
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: sandbox-env-values
+    namespace: flux-system
+  path: ./sandbox-ai-consumer/overlays/prod
   prune: true
   wait: true
   timeout: 5m0s

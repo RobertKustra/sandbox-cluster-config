@@ -10,7 +10,9 @@ spec:
     - name: minikube-llm
     - name: minikube-langfuse
     - name: minikube-monitoring
-    - name: sandbox-env-values-dev
+    - name: sandbox-nginx-values-dev
+    - name: sandbox-redis-values-dev
+    - name: sandbox-ai-consumer-values-dev
   path: ./clusters/minikube/environments/dev
   prune: true
   wait: true

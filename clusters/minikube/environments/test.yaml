@@ -8,7 +8,9 @@ spec:
   dependsOn:
     - name: minikube-postgres-operator
     - name: minikube-monitoring
-    - name: sandbox-env-values-test
+    - name: sandbox-nginx-values-test
+    - name: sandbox-redis-values-test
+    - name: sandbox-ai-consumer-values-test
     - name: minikube-llm
     - name: minikube-langfuse
   path: ./clusters/minikube/environments/test
